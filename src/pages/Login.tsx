@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Moon, Sun } from 'lucide-react';
+import { useTheme } from '../hooks/useTheme';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -11,6 +12,7 @@ const Login = () => {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   
   const { user, login } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,29 +45,38 @@ const Login = () => {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8 dark:bg-gray-900">
+      <div className="absolute top-4 right-4">
+        <button 
+          onClick={toggleTheme} 
+          className="rounded-full p-2 bg-white text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+        >
+          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
+      </div>
+      
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <img
-            src="https://framerusercontent.com/images/MvoPh4vg0G6mUaKDRX4C71WCkPg.svg"
+            src="https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://frontdesk.com.br/&size=64"
             alt="Frontdesk Logo"
             className="mx-auto h-12"
           />
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Login</h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">Login</h2>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
             Entre com suas credenciais para acessar o painel
           </p>
         </div>
         
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="rounded-md bg-red-50 p-4">
+            <div className="rounded-md bg-red-50 p-4 dark:bg-red-900/30">
               <div className="flex">
                 <div className="flex-shrink-0">
-                  <AlertCircle className="h-5 w-5 text-red-400" />
+                  <AlertCircle className="h-5 w-5 text-red-400 dark:text-red-300" />
                 </div>
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">{error}</h3>
+                  <h3 className="text-sm font-medium text-red-800 dark:text-red-300">{error}</h3>
                 </div>
               </div>
             </div>
@@ -82,7 +93,7 @@ const Login = () => {
                 type="email"
                 autoComplete="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-frontdesk-500 focus:border-frontdesk-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-frontdesk-500 focus:border-frontdesk-500 focus:z-10 sm:text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder-gray-400"
                 placeholder="E-mail"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -98,7 +109,7 @@ const Login = () => {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-frontdesk-500 focus:border-frontdesk-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-frontdesk-500 focus:border-frontdesk-500 focus:z-10 sm:text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder-gray-400"
                 placeholder="Senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -110,7 +121,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={isLoggingIn}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-frontdesk-600 hover:bg-frontdesk-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-frontdesk-500"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-frontdesk-600 hover:bg-frontdesk-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-frontdesk-500 dark:bg-frontdesk-500 dark:hover:bg-frontdesk-600"
             >
               {isLoggingIn ? (
                 <span className="flex items-center">
@@ -127,19 +138,19 @@ const Login = () => {
           </div>
 
           <div className="text-center text-sm">
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-300">
               Acesso de demonstração:
             </p>
             <div className="mt-2 grid grid-cols-2 gap-4">
-              <div className="rounded-md bg-gray-50 p-2 border border-gray-200">
-                <p className="font-semibold">Admin</p>
-                <p className="text-xs text-gray-500">contato.frontdesk@gmail.com</p>
-                <p className="text-xs text-gray-500">Acesso@01</p>
+              <div className="rounded-md bg-gray-50 p-2 border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                <p className="font-semibold dark:text-white">Admin</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">contato.frontdesk@gmail.com</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Acesso@01</p>
               </div>
-              <div className="rounded-md bg-gray-50 p-2 border border-gray-200">
-                <p className="font-semibold">Usuário</p>
-                <p className="text-xs text-gray-500">usuario@frontdesk.com.br</p>
-                <p className="text-xs text-gray-500">Acesso@01</p>
+              <div className="rounded-md bg-gray-50 p-2 border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                <p className="font-semibold dark:text-white">Usuário</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">usuario@frontdesk.com.br</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Acesso@01</p>
               </div>
             </div>
           </div>

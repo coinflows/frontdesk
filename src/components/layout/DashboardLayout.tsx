@@ -32,6 +32,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     }
   }, [user, loading]);
 
+  const toggleTokenModal = () => {
+    setShowTokenModal(prev => !prev);
+  };
+
   const handleTokenSubmit = async () => {
     if (!token.trim()) {
       setTokenError('O token é obrigatório');
@@ -77,10 +81,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   // If loading, show loading screen
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-screen items-center justify-center dark:bg-gray-900">
         <div className="text-center">
-          <div className="mb-4 h-10 w-10 animate-spin rounded-full border-b-2 border-t-2 border-frontdesk-500 mx-auto"></div>
-          <p className="text-gray-600">Carregando...</p>
+          <div className="mb-4 h-10 w-10 animate-spin rounded-full border-b-2 border-t-2 border-frontdesk-500 mx-auto dark:border-frontdesk-400"></div>
+          <p className="text-gray-600 dark:text-gray-400">Carregando...</p>
         </div>
       </div>
     );
@@ -97,45 +101,63 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar collapsed={sidebarCollapsed} toggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)} />
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+      <Sidebar 
+        collapsed={sidebarCollapsed} 
+        toggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)} 
+        toggleTokenModal={toggleTokenModal} 
+      />
       
       <div 
         className={`flex-1 transition-all duration-300 ${
           sidebarCollapsed ? 'ml-20' : 'ml-64'
-        }`}
+        } dark:text-gray-200`}
       >
         <main className="h-full overflow-auto p-6">{children}</main>
       </div>
 
-      {/* Token Modal for Admin */}
+      {/* Token Modal for API Connection */}
       <Modal
         isOpen={showTokenModal}
-        onClose={() => {}}
+        onClose={() => {
+          // Only allow closing if already connected
+          if (user?.apiConnected) {
+            setShowTokenModal(false);
+          }
+        }}
         title="Conexão com Beds24"
-        disableClose={true}
+        disableClose={!user?.apiConnected}
       >
         <div className="space-y-4">
-          <p className="text-gray-600">
-            Para utilizar o Frontdesk, é necessário conectar com a API do Beds24. 
-            O token de acesso já está inserido abaixo.
+          <p className="text-gray-600 dark:text-gray-300">
+            {user?.apiConnected 
+              ? "Gerencie sua conexão com a API do Beds24. Seu token atual está ativo."
+              : "Para utilizar o Frontdesk, é necessário conectar com a API do Beds24. O token de acesso já está inserido abaixo."}
           </p>
           
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Token de acesso (long life)
             </label>
             <textarea
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-frontdesk-500 focus:outline-none focus:ring-1 focus:ring-frontdesk-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-frontdesk-500 focus:outline-none focus:ring-1 focus:ring-frontdesk-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               rows={4}
               value={token}
               onChange={(e) => setToken(e.target.value)}
               placeholder="Cole seu token da API Beds24 aqui..."
             />
-            {tokenError && <p className="mt-1 text-sm text-red-600">{tokenError}</p>}
+            {tokenError && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{tokenError}</p>}
           </div>
           
-          <div className="mt-5 flex justify-end">
+          <div className="mt-5 flex justify-end space-x-3">
+            {user?.apiConnected && (
+              <button
+                onClick={() => setShowTokenModal(false)}
+                className="btn-secondary dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+              >
+                Fechar
+              </button>
+            )}
             <button
               onClick={handleTokenSubmit}
               disabled={tokenLoading}
@@ -147,7 +169,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   Validando...
                 </>
               ) : (
-                'Conectar'
+                user?.apiConnected ? 'Atualizar Conexão' : 'Conectar'
               )}
             </button>
           </div>
