@@ -1,9 +1,81 @@
+
 // API service for Beds24 integration
 
 const API_BASE_URL = 'https://beds24.com/api/v2';
 
 // Helper to simulate API delay for non-real requests
 const simulateDelay = (ms = 500) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Mock data for the application
+const mockResponses = {
+  users: [
+    {
+      id: '101',
+      name: 'João Silva',
+      email: 'joao@frontdesk.com.br',
+      role: 'user',
+      apiConnected: true,
+      properties: ['1001']
+    },
+    {
+      id: '102',
+      name: 'Maria Santos',
+      email: 'maria@frontdesk.com.br',
+      role: 'user',
+      apiConnected: true,
+      properties: ['1002']
+    },
+    {
+      id: '103',
+      name: 'Pedro Ferreira',
+      email: 'pedro@frontdesk.com.br',
+      role: 'user',
+      apiConnected: false,
+      properties: ['1003']
+    }
+  ],
+  bookings: [
+    {
+      bookId: 'B1001',
+      propId: '1001',
+      firstName: 'João',
+      lastName: 'Silva',
+      adults: 2,
+      children: 0,
+      dateFrom: '2023-12-10',
+      dateTo: '2023-12-15',
+      status: 'confirmed',
+      totalAmount: 800,
+      channelName: 'Airbnb'
+    },
+    {
+      bookId: 'B1002',
+      propId: '1002',
+      firstName: 'Maria',
+      lastName: 'Santos',
+      adults: 4,
+      children: 2,
+      dateFrom: '2023-12-20',
+      dateTo: '2023-12-27',
+      status: 'confirmed',
+      totalAmount: 1500,
+      channelName: 'Booking.com'
+    },
+    {
+      bookId: 'B1003',
+      propId: '1003',
+      firstName: 'Pedro',
+      lastName: 'Ferreira',
+      adults: 1,
+      children: 0,
+      dateFrom: '2023-12-05',
+      dateTo: '2023-12-08',
+      status: 'confirmed',
+      totalAmount: 450,
+      channelName: 'Direto'
+    }
+  ]
+};
 
 // Validate token with API
 export const validateToken = async (token: string) => {
