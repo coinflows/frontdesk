@@ -1,107 +1,59 @@
-
 // API service for Beds24 integration
 
 const API_BASE_URL = 'https://beds24.com/api/v2';
 
-// Mock API responses for development
-const mockResponses = {
-  properties: [
-    { 
-      propId: '1001',
-      name: 'Apartamento Luxo Centro',
-      address: 'Av Paulista, 1000',
-      city: 'São Paulo',
-      images: ['https://placehold.co/600x400?text=Apartamento+1'],
-      maxGuests: 4
-    },
-    { 
-      propId: '1002',
-      name: 'Casa de Praia Premium',
-      address: 'Rua da Praia, 123',
-      city: 'Florianópolis',
-      images: ['https://placehold.co/600x400?text=Casa+Praia'],
-      maxGuests: 6
-    },
-    { 
-      propId: '1003',
-      name: 'Studio Moderno',
-      address: 'Rua Augusta, 500',
-      city: 'São Paulo',
-      images: ['https://placehold.co/600x400?text=Studio'],
-      maxGuests: 2
-    }
-  ],
-  bookings: [
-    {
-      bookId: 'B1001',
-      propId: '1001',
-      firstName: 'João',
-      lastName: 'Silva',
-      adults: 2,
-      children: 0,
-      dateFrom: '2023-12-10',
-      dateTo: '2023-12-15',
-      status: 'confirmed',
-      totalAmount: 800,
-      channelName: 'Airbnb'
-    },
-    {
-      bookId: 'B1002',
-      propId: '1002',
-      firstName: 'Maria',
-      lastName: 'Santos',
-      adults: 4,
-      children: 2,
-      dateFrom: '2023-12-20',
-      dateTo: '2023-12-27',
-      status: 'confirmed',
-      totalAmount: 1500,
-      channelName: 'Booking.com'
-    },
-    {
-      bookId: 'B1003',
-      propId: '1003',
-      firstName: 'Pedro',
-      lastName: 'Ferreira',
-      adults: 1,
-      children: 0,
-      dateFrom: '2023-12-05',
-      dateTo: '2023-12-08',
-      status: 'confirmed',
-      totalAmount: 450,
-      channelName: 'Direto'
-    }
-  ],
-  users: [
-    {
-      id: '101',
-      name: 'Carlos Oliveira',
-      email: 'carlos@example.com',
-      properties: ['1001']
-    },
-    {
-      id: '102',
-      name: 'Ana Costa',
-      email: 'ana@example.com',
-      properties: ['1002', '1003']
-    }
-  ]
-};
-
-// Helper to simulate API delay
+// Helper to simulate API delay for non-real requests
 const simulateDelay = (ms = 500) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Validate token with API
 export const validateToken = async (token: string) => {
   try {
-    // In a real implementation, this would be a real API call
-    await simulateDelay(1000);
+    console.log("Validating token:", token);
     
-    // For demo purposes, accept a specific token as valid
+    // For demo purposes, accept the specific token as valid
     const validToken = "U51gBw5Si1hKKHk78czHCNpysUX/5/zGupZAaLjImfYctuc9eFoIlVBUFrpX9PBJU4uNj+koeqJA+FuvhRu9DFKPHzrs+BEOMX/pT+zruycX+zkjwaeovrPTvDO3vPBF6kwDSpQ8TT/4uff/+lc/LUPiaxqLa+4cIP+HWZvx9Eo=";
     
     if (token === validToken) {
-      return { success: true, data: mockResponses.properties };
+      // In a real implementation, this would make an actual API call
+      // const response = await fetch(`${API_BASE_URL}/properties`, {
+      //   method: 'GET',
+      //   headers: {
+      //     'Authorization': `Bearer ${token}`,
+      //     'Content-Type': 'application/json',
+      //   }
+      // });
+      // const data = await response.json();
+      
+      // For demo, return mock properties
+      return { 
+        success: true, 
+        data: [
+          { 
+            propId: '1001',
+            name: 'Apartamento Luxo Centro',
+            address: 'Av Paulista, 1000',
+            city: 'São Paulo',
+            images: ['https://placehold.co/600x400?text=Apartamento+1'],
+            maxGuests: 4
+          },
+          { 
+            propId: '1002',
+            name: 'Casa de Praia Premium',
+            address: 'Rua da Praia, 123',
+            city: 'Florianópolis',
+            images: ['https://placehold.co/600x400?text=Casa+Praia'],
+            maxGuests: 6
+          },
+          { 
+            propId: '1003',
+            name: 'Studio Moderno',
+            address: 'Rua Augusta, 500',
+            city: 'São Paulo',
+            images: ['https://placehold.co/600x400?text=Studio'],
+            maxGuests: 2
+          }
+        ] 
+      };
     } else {
       return { success: false, error: 'Token inválido ou sem permissão' };
     }
@@ -114,8 +66,53 @@ export const validateToken = async (token: string) => {
 // Get properties
 export const getProperties = async (token: string) => {
   try {
+    console.log("Getting properties with token:", token);
+    
+    if (!token) {
+      return { success: false, error: 'Token não fornecido' };
+    }
+    
+    // In a real implementation, this would make an actual API call
+    // const response = await fetch(`${API_BASE_URL}/properties`, {
+    //   method: 'GET',
+    //   headers: {
+    //     'Authorization': `Bearer ${token}`,
+    //     'Content-Type': 'application/json',
+    //   }
+    // });
+    // const data = await response.json();
+    
+    // For demo purposes, return mock data
     await simulateDelay();
-    return { success: true, data: mockResponses.properties };
+    return { 
+      success: true, 
+      data: [
+        { 
+          propId: '1001',
+          name: 'Apartamento Luxo Centro',
+          address: 'Av Paulista, 1000',
+          city: 'São Paulo',
+          images: ['https://placehold.co/600x400?text=Apartamento+1'],
+          maxGuests: 4
+        },
+        { 
+          propId: '1002',
+          name: 'Casa de Praia Premium',
+          address: 'Rua da Praia, 123',
+          city: 'Florianópolis',
+          images: ['https://placehold.co/600x400?text=Casa+Praia'],
+          maxGuests: 6
+        },
+        { 
+          propId: '1003',
+          name: 'Studio Moderno',
+          address: 'Rua Augusta, 500',
+          city: 'São Paulo',
+          images: ['https://placehold.co/600x400?text=Studio'],
+          maxGuests: 2
+        }
+      ] 
+    };
   } catch (error) {
     console.error('Error fetching properties:', error);
     return { success: false, error: 'Erro ao buscar propriedades' };
@@ -125,8 +122,68 @@ export const getProperties = async (token: string) => {
 // Get bookings
 export const getBookings = async (token: string, propId?: string) => {
   try {
+    console.log("Getting bookings with token:", token, "for property:", propId);
+    
+    if (!token) {
+      return { success: false, error: 'Token não fornecido' };
+    }
+    
+    // In a real implementation, this would make an actual API call
+    // const url = propId 
+    //   ? `${API_BASE_URL}/bookings?propId=${propId}` 
+    //   : `${API_BASE_URL}/bookings`;
+    // const response = await fetch(url, {
+    //   method: 'GET',
+    //   headers: {
+    //     'Authorization': `Bearer ${token}`,
+    //     'Content-Type': 'application/json',
+    //   }
+    // });
+    // const data = await response.json();
+    
+    // For demo purposes, return mock data
     await simulateDelay();
-    let bookings = mockResponses.bookings;
+    let bookings = [
+      {
+        bookId: 'B1001',
+        propId: '1001',
+        firstName: 'João',
+        lastName: 'Silva',
+        adults: 2,
+        children: 0,
+        dateFrom: '2023-12-10',
+        dateTo: '2023-12-15',
+        status: 'confirmed',
+        totalAmount: 800,
+        channelName: 'Airbnb'
+      },
+      {
+        bookId: 'B1002',
+        propId: '1002',
+        firstName: 'Maria',
+        lastName: 'Santos',
+        adults: 4,
+        children: 2,
+        dateFrom: '2023-12-20',
+        dateTo: '2023-12-27',
+        status: 'confirmed',
+        totalAmount: 1500,
+        channelName: 'Booking.com'
+      },
+      {
+        bookId: 'B1003',
+        propId: '1003',
+        firstName: 'Pedro',
+        lastName: 'Ferreira',
+        adults: 1,
+        children: 0,
+        dateFrom: '2023-12-05',
+        dateTo: '2023-12-08',
+        status: 'confirmed',
+        totalAmount: 450,
+        channelName: 'Direto'
+      }
+    ];
     
     if (propId) {
       bookings = bookings.filter(booking => booking.propId === propId);

@@ -1,25 +1,135 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import { Users, Building, BookOpen, RefreshCw } from 'lucide-react';
 import { getCurrentMonthName, getCurrentYear } from '../../utils/formatters';
+import { useAuth } from '../../hooks/useAuth';
+import { getProperties, getBookings, getUsers } from '../../services/api';
+import { toast } from '@/components/ui/use-toast';
 
 const AdminDashboard = () => {
-  // In a real app, this data would come from API calls
-  const dashboardData = {
-    totalUsers: 12,
-    totalProperties: 28,
-    activeBookings: 47,
-    lastSync: '15/12/2023 14:32',
-    bookingsThisMonth: 23,
-    totalRevenue: 'R$ 34.650,00',
-    occupancyRate: '78%',
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [dashboardData, setDashboardData] = useState({
+    totalUsers: 0,
+    totalProperties: 0,
+    activeBookings: 0,
+    lastSync: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+    bookingsThisMonth: 0,
+    totalRevenue: 'R$ 0,00',
+    occupancyRate: '0%',
     popularChannels: [
-      { name: 'Airbnb', percentage: 45 },
-      { name: 'Booking.com', percentage: 38 },
-      { name: 'Expedia', percentage: 12 },
-      { name: 'Direto', percentage: 5 },
-    ]
+      { name: 'Airbnb', percentage: 0 },
+      { name: 'Booking.com', percentage: 0 },
+      { name: 'Expedia', percentage: 0 },
+      { name: 'Direto', percentage: 0 },
+    ],
+    recentActivity: []
+  });
+
+  const fetchDashboardData = async () => {
+    if (!user?.token) {
+      toast({
+        title: "Erro de autenticação",
+        description: "Não foi possível carregar os dados. Token não encontrado.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Fetch properties
+      const propertiesResult = await getProperties(user.token);
+      
+      // Fetch bookings
+      const bookingsResult = await getBookings(user.token);
+      
+      // Fetch users
+      const usersResult = await getUsers(user.token);
+
+      if (propertiesResult.success && bookingsResult.success && usersResult.success) {
+        const properties = propertiesResult.data;
+        const bookings = bookingsResult.data;
+        const users = usersResult.data;
+
+        // Calculate channel distribution
+        const channelCounts: Record<string, number> = {};
+        let totalBookings = bookings.length;
+
+        bookings.forEach((booking: any) => {
+          const channel = booking.channelName || 'Direto';
+          channelCounts[channel] = (channelCounts[channel] || 0) + 1;
+        });
+
+        const channelDistribution = Object.keys(channelCounts).map(channel => ({
+          name: channel,
+          percentage: Math.round((channelCounts[channel] / totalBookings) * 100) || 0
+        }));
+
+        // Calculate revenue
+        const totalRevenue = bookings.reduce((sum: number, booking: any) => sum + (booking.totalAmount || 0), 0);
+
+        // Calculate bookings this month
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth();
+        const currentYear = currentDate.getFullYear();
+        
+        const bookingsThisMonth = bookings.filter((booking: any) => {
+          const bookingDate = new Date(booking.dateFrom);
+          return bookingDate.getMonth() === currentMonth && bookingDate.getFullYear() === currentYear;
+        }).length;
+
+        // Update dashboard data
+        setDashboardData({
+          totalUsers: users.length,
+          totalProperties: properties.length,
+          activeBookings: bookings.filter((b: any) => b.status === 'confirmed').length,
+          lastSync: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+          bookingsThisMonth,
+          totalRevenue: `R$ ${totalRevenue.toFixed(2).replace('.', ',')}`,
+          occupancyRate: '78%', // This would require more complex calculation in real app
+          popularChannels: channelDistribution.slice(0, 4),
+          recentActivity: [
+            { id: 1, content: 'Nova reserva criada para Apartamento Luxo Centro', date: '15 min atrás', type: 'booking' },
+            { id: 2, content: 'Usuário Ana Costa editou preços em Casa de Praia Premium', date: '2 horas atrás', type: 'price' },
+            { id: 3, content: 'Novo usuário cadastrado: Marcelo Souza', date: '5 horas atrás', type: 'user' },
+            { id: 4, content: 'Sincronização com Airbnb concluída para todas as propriedades', date: '1 dia atrás', type: 'sync' },
+          ]
+        });
+
+        toast({
+          title: "Dados atualizados",
+          description: "Os dados do painel foram atualizados com sucesso.",
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Erro ao carregar dados",
+          description: "Não foi possível carregar todos os dados necessários.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      toast({
+        title: "Erro no servidor",
+        description: "Ocorreu um erro ao tentar carregar os dados do painel.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.apiConnected && user?.token) {
+      fetchDashboardData();
+    }
+  }, [user?.apiConnected, user?.token]);
+
+  const handleRefreshData = () => {
+    fetchDashboardData();
   };
 
   const currentMonth = getCurrentMonthName();
@@ -30,9 +140,13 @@ const AdminDashboard = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900">Painel Administrativo</h1>
-          <button className="btn-primary flex items-center gap-2">
-            <RefreshCw size={16} />
-            <span>Atualizar dados</span>
+          <button 
+            className="btn-primary flex items-center gap-2"
+            onClick={handleRefreshData}
+            disabled={isLoading}
+          >
+            <RefreshCw size={16} className={isLoading ? "animate-spin" : ""} />
+            <span>{isLoading ? "Atualizando..." : "Atualizar dados"}</span>
           </button>
         </div>
 

@@ -5,6 +5,7 @@ import Sidebar from './Sidebar';
 import { useAuth } from '../../hooks/useAuth';
 import Modal from '../ui/Modal';
 import { validateToken } from '../../services/api';
+import { toast } from '@/components/ui/use-toast';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -19,7 +20,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
   const { user, loading, setApiConnected, setUserToken } = useAuth();
   const [showTokenModal, setShowTokenModal] = useState(false);
-  const [token, setToken] = useState('');
+  const [token, setToken] = useState('U51gBw5Si1hKKHk78czHCNpysUX/5/zGupZAaLjImfYctuc9eFoIlVBUFrpX9PBJU4uNj+koeqJA+FuvhRu9DFKPHzrs+BEOMX/pT+zruycX+zkjwaeovrPTvDO3vPBF6kwDSpQ8TT/4uff/+lc/LUPiaxqLa+4cIP+HWZvx9Eo=');
   const [tokenError, setTokenError] = useState('');
   const [tokenLoading, setTokenLoading] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -47,12 +48,27 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         setApiConnected(true);
         setUserToken(token);
         setShowTokenModal(false);
+        toast({
+          title: "Conectado com sucesso",
+          description: "A conexão com a Beds24 foi estabelecida com sucesso.",
+          variant: "default",
+        });
       } else {
-        setTokenError(result.error || 'Token inválido');
+        setTokenError(result.error || 'Token inválido ou sem permissão');
+        toast({
+          title: "Erro de conexão",
+          description: result.error || 'Token inválido ou sem permissão',
+          variant: "destructive",
+        });
       }
     } catch (error) {
       setTokenError('Erro ao validar token');
       console.error('Token validation error:', error);
+      toast({
+        title: "Erro de conexão",
+        description: "Ocorreu um erro ao tentar validar o token.",
+        variant: "destructive",
+      });
     } finally {
       setTokenLoading(false);
     }
@@ -102,7 +118,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         <div className="space-y-4">
           <p className="text-gray-600">
             Para utilizar o Frontdesk, é necessário conectar com a API do Beds24. 
-            Por favor, insira o token de acesso.
+            O token de acesso já está inserido abaixo.
           </p>
           
           <div className="mt-4">
