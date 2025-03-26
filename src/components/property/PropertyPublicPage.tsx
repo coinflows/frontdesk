@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { ArrowLeft, MapPin, Calendar, MessageSquare, UserIcon, Bed, Share, Heart, Phone, Mail, Wifi, Coffee, Tv, Lock, ShowerHead, Car } from 'lucide-react';
-import { toast } from '@/components/ui/toast';
+import { toast } from '@/hooks/use-toast';
 import { formatCurrency } from '@/utils/formatters';
 import { getPropertyById } from '@/services/api';
 
@@ -364,3 +363,4 @@ const PropertyPublicPage = () => {
 };
 
 export default PropertyPublicPage;
+
