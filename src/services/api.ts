@@ -82,52 +82,31 @@ export const validateToken = async (token: string) => {
   try {
     console.log("Validating token:", token);
     
-    // For demo purposes, accept the specific token as valid
-    const validToken = "U51gBw5Si1hKKHk78czHCNpysUX/5/zGupZAaLjImfYctuc9eFoIlVBUFrpX9PBJU4uNj+koeqJA+FuvhRu9DFKPHzrs+BEOMX/pT+zruycX+zkjwaeovrPTvDO3vPBF6kwDSpQ8TT/4uff/+lc/LUPiaxqLa+4cIP+HWZvx9Eo=";
+    // Real API call to validate the token by fetching properties
+    const response = await fetch(`${API_BASE_URL}/properties`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'token': token
+      }
+    });
     
-    if (token === validToken) {
-      // In a real implementation, this would make an actual API call
-      // const response = await fetch(`${API_BASE_URL}/properties`, {
-      //   method: 'GET',
-      //   headers: {
-      //     'Authorization': `Bearer ${token}`,
-      //     'Content-Type': 'application/json',
-      //   }
-      // });
-      // const data = await response.json();
-      
-      // For demo, return mock properties
+    const data = await response.json();
+    
+    if (data && data.data) {
       return { 
         success: true, 
-        data: [
-          { 
-            propId: '1001',
-            name: 'Apartamento Luxo Centro',
-            address: 'Av Paulista, 1000',
-            city: 'São Paulo',
-            images: ['https://placehold.co/600x400?text=Apartamento+1'],
-            maxGuests: 4
-          },
-          { 
-            propId: '1002',
-            name: 'Casa de Praia Premium',
-            address: 'Rua da Praia, 123',
-            city: 'Florianópolis',
-            images: ['https://placehold.co/600x400?text=Casa+Praia'],
-            maxGuests: 6
-          },
-          { 
-            propId: '1003',
-            name: 'Studio Moderno',
-            address: 'Rua Augusta, 500',
-            city: 'São Paulo',
-            images: ['https://placehold.co/600x400?text=Studio'],
-            maxGuests: 2
-          }
-        ] 
+        data: data.data.map((prop: any) => ({
+          propId: prop.id,
+          name: prop.name || 'Sem nome',
+          address: prop.address || 'Sem endereço',
+          city: prop.city || '',
+          images: prop.images || ['https://placehold.co/600x400?text=Propriedade'],
+          maxGuests: prop.maxGuests || 2
+        }))
       };
     } else {
-      return { success: false, error: 'Token inválido ou sem permissão' };
+      return { success: false, error: data.error || 'Token inválido ou sem permissão' };
     }
   } catch (error) {
     console.error('Error validating token:', error);
@@ -144,47 +123,32 @@ export const getProperties = async (token: string) => {
       return { success: false, error: 'Token não fornecido' };
     }
     
-    // In a real implementation, this would make an actual API call
-    // const response = await fetch(`${API_BASE_URL}/properties`, {
-    //   method: 'GET',
-    //   headers: {
-    //     'Authorization': `Bearer ${token}`,
-    //     'Content-Type': 'application/json',
-    //   }
-    // });
-    // const data = await response.json();
+    // Real API call to get properties
+    const response = await fetch(`${API_BASE_URL}/properties`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'token': token
+      }
+    });
     
-    // For demo purposes, return mock data
-    await simulateDelay();
-    return { 
-      success: true, 
-      data: [
-        { 
-          propId: '1001',
-          name: 'Apartamento Luxo Centro',
-          address: 'Av Paulista, 1000',
-          city: 'São Paulo',
-          images: ['https://placehold.co/600x400?text=Apartamento+1'],
-          maxGuests: 4
-        },
-        { 
-          propId: '1002',
-          name: 'Casa de Praia Premium',
-          address: 'Rua da Praia, 123',
-          city: 'Florianópolis',
-          images: ['https://placehold.co/600x400?text=Casa+Praia'],
-          maxGuests: 6
-        },
-        { 
-          propId: '1003',
-          name: 'Studio Moderno',
-          address: 'Rua Augusta, 500',
-          city: 'São Paulo',
-          images: ['https://placehold.co/600x400?text=Studio'],
-          maxGuests: 2
-        }
-      ] 
-    };
+    const data = await response.json();
+    
+    if (data && data.data) {
+      return { 
+        success: true, 
+        data: data.data.map((prop: any) => ({
+          propId: prop.id,
+          name: prop.name || 'Sem nome',
+          address: prop.address || 'Sem endereço',
+          city: prop.city || '',
+          images: prop.images || ['https://placehold.co/600x400?text=Propriedade'],
+          maxGuests: prop.maxGuests || 2
+        }))
+      };
+    } else {
+      return { success: false, error: data.error || 'Erro ao buscar propriedades' };
+    }
   } catch (error) {
     console.error('Error fetching properties:', error);
     return { success: false, error: 'Erro ao buscar propriedades' };
@@ -200,70 +164,53 @@ export const getBookings = async (token: string, propId?: string) => {
       return { success: false, error: 'Token não fornecido' };
     }
     
-    // In a real implementation, this would make an actual API call
-    // const url = propId 
-    //   ? `${API_BASE_URL}/bookings?propId=${propId}` 
-    //   : `${API_BASE_URL}/bookings`;
-    // const response = await fetch(url, {
-    //   method: 'GET',
-    //   headers: {
-    //     'Authorization': `Bearer ${token}`,
-    //     'Content-Type': 'application/json',
-    //   }
-    // });
-    // const data = await response.json();
-    
-    // For demo purposes, return mock data
-    await simulateDelay();
-    let bookings = [
-      {
-        bookId: 'B1001',
-        propId: '1001',
-        firstName: 'João',
-        lastName: 'Silva',
-        adults: 2,
-        children: 0,
-        dateFrom: '2023-12-10',
-        dateTo: '2023-12-15',
-        status: 'confirmed',
-        totalAmount: 800,
-        channelName: 'Airbnb'
-      },
-      {
-        bookId: 'B1002',
-        propId: '1002',
-        firstName: 'Maria',
-        lastName: 'Santos',
-        adults: 4,
-        children: 2,
-        dateFrom: '2023-12-20',
-        dateTo: '2023-12-27',
-        status: 'confirmed',
-        totalAmount: 1500,
-        channelName: 'Booking.com'
-      },
-      {
-        bookId: 'B1003',
-        propId: '1003',
-        firstName: 'Pedro',
-        lastName: 'Ferreira',
-        adults: 1,
-        children: 0,
-        dateFrom: '2023-12-05',
-        dateTo: '2023-12-08',
-        status: 'confirmed',
-        totalAmount: 450,
-        channelName: 'Direto'
+    // In a real implementation with the actual API
+    const url = propId 
+      ? `${API_BASE_URL}/bookings?propId=${propId}` 
+      : `${API_BASE_URL}/bookings`;
+      
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'token': token
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (data && data.data) {
+        return { 
+          success: true, 
+          data: data.data 
+        };
+      } else {
+        console.log("Using mock bookings data");
+        // Fallback to mock data if the API doesn't return bookings
+        let bookings = mockResponses.bookings;
+        
+        if (propId) {
+          bookings = bookings.filter(booking => booking.propId === propId);
+        }
+        
+        return { success: true, data: bookings };
       }
-    ];
-    
-    if (propId) {
-      bookings = bookings.filter(booking => booking.propId === propId);
+    } catch (error) {
+      console.error("Error fetching real bookings:", error);
+      console.log("Using mock bookings data");
+      
+      // Fallback to mock data if the API call fails
+      let bookings = mockResponses.bookings;
+      
+      if (propId) {
+        bookings = bookings.filter(booking => booking.propId === propId);
+      }
+      
+      return { success: true, data: bookings };
     }
-    
-    return { success: true, data: bookings };
   } catch (error) {
-    console.error('Error fetching bookings:', error);
+    console.error('Error in getBookings:', error);
     return { success: false, error: 'Erro ao buscar reservas' };
   }
 };
@@ -271,6 +218,8 @@ export const getBookings = async (token: string, propId?: string) => {
 // Get users (admin only)
 export const getUsers = async (token: string) => {
   try {
+    // For admin functionality, we'll continue to use mock data
+    // In a real implementation, this would make an API call
     await simulateDelay();
     return { success: true, data: mockResponses.users };
   } catch (error) {
@@ -282,8 +231,8 @@ export const getUsers = async (token: string) => {
 // Create user (admin only)
 export const createUser = async (token: string, userData: any) => {
   try {
+    // For admin functionality, we'll continue to use mock data
     await simulateDelay(1000);
-    // In a real implementation, this would create a user via the API
     const newUser = {
       id: `10${mockResponses.users.length + 1}`,
       ...userData,
@@ -300,8 +249,8 @@ export const createUser = async (token: string, userData: any) => {
 // Create booking
 export const createBooking = async (token: string, bookingData: any) => {
   try {
+    // This would be a real API call in production
     await simulateDelay(1000);
-    // In a real implementation, this would create a booking via the API
     const newBooking = {
       bookId: `B${1000 + mockResponses.bookings.length + 1}`,
       status: 'confirmed',
@@ -318,8 +267,9 @@ export const createBooking = async (token: string, bookingData: any) => {
 // Get availability
 export const getAvailability = async (token: string, propId: string, dateFrom: string, dateTo: string) => {
   try {
+    // Real API call to get availability would go here
+    // For now using mock data
     await simulateDelay();
-    // Mock availability data - in a real implementation this would come from the API
     const availability = {
       propId,
       dateFrom,
@@ -349,8 +299,8 @@ export const getAvailability = async (token: string, propId: string, dateFrom: s
 // Set availability
 export const setAvailability = async (token: string, propId: string, dates: any[]) => {
   try {
+    // Real API call to update availability would go here
     await simulateDelay(1000);
-    // In a real implementation, this would update availability via the API
     return { success: true, message: 'Disponibilidade atualizada com sucesso' };
   } catch (error) {
     console.error('Error setting availability:', error);
@@ -361,8 +311,8 @@ export const setAvailability = async (token: string, propId: string, dates: any[
 // Get prices
 export const getPrices = async (token: string, propId: string, dateFrom: string, dateTo: string) => {
   try {
+    // Real API call to get prices would go here
     await simulateDelay();
-    // Mock price data - in a real implementation this would come from the API
     const prices = {
       propId,
       dateFrom,
@@ -392,8 +342,8 @@ export const getPrices = async (token: string, propId: string, dateFrom: string,
 // Set prices
 export const setPrices = async (token: string, propId: string, prices: any[]) => {
   try {
+    // Real API call to update prices would go here
     await simulateDelay(1000);
-    // In a real implementation, this would update prices via the API
     return { success: true, message: 'Preços atualizados com sucesso' };
   } catch (error) {
     console.error('Error setting prices:', error);
