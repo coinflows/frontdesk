@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 
 interface User {
@@ -21,12 +22,16 @@ interface AuthContextType {
   updateApiConnection: (connected: boolean, token: string) => void;
 }
 
+// Token padrão para iniciar já conectado
+const DEFAULT_TOKEN = 'U51gBw5Si1hKKHk78czHCNpysUX/5/zGupZAaLjImfYctuc9eFoIlVBUFrpX9PBJU4uNj+koeqJA+FuvhRu9DFKPHzrs+BEOMX/pT+zruycX+zkjwaeovrPTvDO3vPBF6kwDSpQ8TT/4uff/+lc/LUPiaxqLa+4cIP+HWZvx9Eo=';
+
 const ADMIN_USER = {
   id: '1',
   email: 'contato.frontdesk@gmail.com',
   name: 'Admin',
   role: 'admin' as const,
-  apiConnected: false
+  apiConnected: true,
+  token: DEFAULT_TOKEN
 };
 
 const REGULAR_USER = {
@@ -34,7 +39,8 @@ const REGULAR_USER = {
   email: 'usuario@frontdesk.com.br',
   name: 'Usuário',
   role: 'user' as const,
-  apiConnected: false
+  apiConnected: true,
+  token: DEFAULT_TOKEN
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -56,7 +62,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const storedUser = localStorage.getItem('frontdesk_user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+      // Certificar-se de que o usuário tenha o token e conexão API ativa
+      if (!parsedUser.token) {
+        parsedUser.token = DEFAULT_TOKEN;
+        parsedUser.apiConnected = true;
+        localStorage.setItem('frontdesk_user', JSON.stringify(parsedUser));
+      }
+      setUser(parsedUser);
     }
     setLoading(false);
   }, []);

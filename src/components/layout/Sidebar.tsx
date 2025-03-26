@@ -17,8 +17,6 @@ import {
   LogOut,
   Wifi,
   WifiOff,
-  Sun,
-  Moon,
   Palette
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
@@ -67,8 +65,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleCollapse, toggleToke
 
   // Color scheme options
   const colorSchemes = [
-    { name: 'Roxo (Padrão)', primary: '#7E69AB', secondary: '#9b87f5' },
-    { name: 'Azul', primary: '#3B82F6', secondary: '#60A5FA' },
+    { name: 'Azul (Padrão)', primary: '#3B82F6', secondary: '#60A5FA' },
+    { name: 'Roxo', primary: '#7E69AB', secondary: '#9b87f5' },
     { name: 'Verde', primary: '#10B981', secondary: '#34D399' },
     { name: 'Vermelho', primary: '#EF4444', secondary: '#F87171' },
     { name: 'Laranja', primary: '#F59E0B', secondary: '#FBBF24' },
@@ -97,7 +95,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleCollapse, toggleToke
                 alt="Frontdesk Logo" 
                 className="h-8 mr-2"
               />
-              <span className="text-xl font-bold text-gray-800 dark:text-white">Frontdesk</span>
+              <span className="text-xl font-bold text-gray-800 dark:text-white font-sora">Frontdesk</span>
             </div>
           )}
         </div>
@@ -143,27 +141,6 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleCollapse, toggleToke
           </button>
         </div>
 
-        {/* Theme Toggle and Color Scheme */}
-        <div className="border-t p-4 dark:border-gray-700">
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={toggleTheme}
-              className={`sidebar-link flex-1 ${collapsed ? 'justify-center' : ''} dark:text-gray-200 dark:hover:bg-gray-700`}
-            >
-              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-              {!collapsed && <span>{theme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}</span>}
-            </button>
-            
-            <button
-              onClick={() => setShowColorSchemeModal(true)}
-              className="sidebar-link p-2 flex-none text-frontdesk-600 dark:text-frontdesk-400"
-              title="Esquema de Cores"
-            >
-              <Palette size={20} />
-            </button>
-          </div>
-        </div>
-
         {/* Logout Section */}
         <div className="border-t p-4 dark:border-gray-700">
           <button
@@ -181,7 +158,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleCollapse, toggleToke
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
           <div className="w-full max-w-md rounded-xl bg-white dark:bg-gray-800 shadow-lg transition-all">
             <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Escolha um Esquema de Cores</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white font-sora">Configurações de Aparência</h3>
               <button
                 onClick={() => setShowColorSchemeModal(false)}
                 className="rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500 dark:text-gray-300 dark:hover:bg-gray-700"
@@ -190,24 +167,46 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleCollapse, toggleToke
               </button>
             </div>
             
-            <div className="p-6 grid grid-cols-2 gap-4">
-              {colorSchemes.map((scheme) => (
-                <button
-                  key={scheme.name}
-                  className="flex flex-col items-center p-4 border rounded-lg hover:shadow-md transition-all"
-                  onClick={() => {
-                    // Aqui poderia aplicar o esquema de cores dinamicamente
-                    // Por enquanto apenas fechamos o modal
-                    setShowColorSchemeModal(false);
-                  }}
-                >
-                  <div className="flex space-x-2 mb-2">
-                    <div className="w-6 h-6 rounded-full" style={{ backgroundColor: scheme.primary }}></div>
-                    <div className="w-6 h-6 rounded-full" style={{ backgroundColor: scheme.secondary }}></div>
-                  </div>
-                  <span className="text-sm text-gray-700 dark:text-gray-300">{scheme.name}</span>
-                </button>
-              ))}
+            <div className="p-6">
+              {/* Modo escuro/claro toggle */}
+              <div className="mb-6">
+                <h4 className="font-medium mb-3 text-gray-800 dark:text-white">Modo de Exibição</h4>
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {theme === 'dark' ? 'Modo Escuro' : 'Modo Claro'}
+                  </span>
+                  <button
+                    onClick={toggleTheme}
+                    className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    {theme === 'dark' ? 'Mudar para Claro' : 'Mudar para Escuro'}
+                  </button>
+                </div>
+              </div>
+              
+              <h4 className="font-medium mb-3 text-gray-800 dark:text-white">Esquema de Cores</h4>
+              <div className="grid grid-cols-2 gap-4">
+                {colorSchemes.map((scheme) => (
+                  <button
+                    key={scheme.name}
+                    className="flex flex-col items-center p-4 border rounded-lg hover:shadow-md transition-all"
+                    onClick={() => {
+                      document.documentElement.style.setProperty('--primary-color', scheme.primary);
+                      document.documentElement.style.setProperty('--secondary-color', scheme.secondary);
+                      // Atualizar cores do frontdesk no CSS
+                      document.documentElement.classList.remove('theme-purple', 'theme-blue', 'theme-green', 'theme-red', 'theme-orange', 'theme-pink');
+                      document.documentElement.classList.add(`theme-${scheme.name.toLowerCase().split(' ')[0]}`);
+                      setShowColorSchemeModal(false);
+                    }}
+                  >
+                    <div className="flex space-x-2 mb-2">
+                      <div className="w-6 h-6 rounded-full" style={{ backgroundColor: scheme.primary }}></div>
+                      <div className="w-6 h-6 rounded-full" style={{ backgroundColor: scheme.secondary }}></div>
+                    </div>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">{scheme.name}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>

@@ -1,4 +1,6 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,6 +8,8 @@
 @layer base {
   :root {
     --radius: 0.5rem;
+    --primary-color: #3B82F6;
+    --secondary-color: #60A5FA;
   }
 
   html {
@@ -14,13 +18,22 @@
 
   body {
     @apply bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100;
+    font-family: 'Inter var', sans-serif;
+  }
+  
+  .font-sora {
+    font-family: 'Sora', sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-sora;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply rounded-md bg-frontdesk-600 px-4 py-2 text-white hover:bg-frontdesk-700 focus:outline-none 
-    dark:bg-frontdesk-500 dark:hover:bg-frontdesk-600 transition-colors duration-200;
+    @apply rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none 
+    dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200;
   }
 
   .btn-secondary {
@@ -34,17 +47,71 @@
   }
 
   .sidebar-link.active {
-    @apply bg-frontdesk-100 text-frontdesk-600 
-    dark:bg-frontdesk-900 dark:text-frontdesk-300;
+    @apply bg-blue-100 text-blue-600 
+    dark:bg-blue-900 dark:text-blue-300;
   }
 
   .input-control {
-    @apply rounded-md border border-gray-300 px-3 py-2 focus:border-frontdesk-500 focus:outline-none 
-    dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:focus:border-frontdesk-400;
+    @apply rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none 
+    dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:focus:border-blue-400;
   }
 
   .card-dashboard {
     @apply rounded-lg border border-gray-100 bg-white p-6 shadow-sm 
     dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200;
   }
+}
+
+/* Esquemas de cores temáticos */
+:root.theme-blue {
+  --primary-color: #3B82F6;
+  --secondary-color: #60A5FA;
+}
+
+:root.theme-purple {
+  --primary-color: #7E69AB;
+  --secondary-color: #9b87f5;
+}
+
+:root.theme-green {
+  --primary-color: #10B981;
+  --secondary-color: #34D399;
+}
+
+:root.theme-red {
+  --primary-color: #EF4444;
+  --secondary-color: #F87171;
+}
+
+:root.theme-orange {
+  --primary-color: #F59E0B;
+  --secondary-color: #FBBF24;
+}
+
+:root.theme-pink {
+  --primary-color: #EC4899;
+  --secondary-color: #F472B6;
+}
+
+/* Aplicação dinâmica das cores */
+.btn-primary {
+  background-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--secondary-color);
+}
+
+.sidebar-link.active {
+  background-color: color-mix(in srgb, var(--primary-color) 10%, white);
+  color: var(--primary-color);
+}
+
+.dark .sidebar-link.active {
+  background-color: color-mix(in srgb, var(--primary-color) 30%, black);
+  color: var(--secondary-color);
+}
+
+.input-control:focus {
+  border-color: var(--primary-color);
 }

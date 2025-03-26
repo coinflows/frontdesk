@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/layout/DashboardLayout';
-import { Users, Building, BookOpen, RefreshCw, Sun, Moon, Palette } from 'lucide-react';
+import { Users, Building, BookOpen, RefreshCw, Palette } from 'lucide-react';
 import { getCurrentMonthName, getCurrentYear } from '../../utils/formatters';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
@@ -10,8 +9,9 @@ import { toast } from '@/components/ui/use-toast';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
+  const [showColorModal, setShowColorModal] = useState(false);
   const [dashboardData, setDashboardData] = useState({
     totalUsers: 0,
     totalProperties: 0,
@@ -29,6 +29,15 @@ const AdminDashboard = () => {
     recentActivity: []
   });
 
+  const colorSchemes = [
+    { name: 'Azul (Padrão)', primary: '#3B82F6', secondary: '#60A5FA' },
+    { name: 'Roxo', primary: '#7E69AB', secondary: '#9b87f5' },
+    { name: 'Verde', primary: '#10B981', secondary: '#34D399' },
+    { name: 'Vermelho', primary: '#EF4444', secondary: '#F87171' },
+    { name: 'Laranja', primary: '#F59E0B', secondary: '#FBBF24' },
+    { name: 'Rosa', primary: '#EC4899', secondary: '#F472B6' },
+  ];
+
   const fetchDashboardData = async () => {
     if (!user?.token) {
       toast({
@@ -42,13 +51,10 @@ const AdminDashboard = () => {
     setIsLoading(true);
 
     try {
-      // Fetch properties
       const propertiesResult = await getProperties(user.token);
       
-      // Fetch bookings
       const bookingsResult = await getBookings(user.token);
       
-      // Fetch users
       const usersResult = await getUsers(user.token);
 
       if (propertiesResult.success && bookingsResult.success && usersResult.success) {
@@ -59,7 +65,6 @@ const AdminDashboard = () => {
         console.log("API Response - Properties:", properties);
         console.log("API Response - Bookings:", bookings);
 
-        // Calculate channel distribution
         const channelCounts: Record<string, number> = {};
         let totalBookings = bookings.length;
 
@@ -73,10 +78,8 @@ const AdminDashboard = () => {
           percentage: Math.round((channelCounts[channel] / totalBookings) * 100) || 0
         }));
 
-        // Calculate revenue
         const totalRevenue = bookings.reduce((sum: number, booking: any) => sum + (booking.totalAmount || 0), 0);
 
-        // Calculate bookings this month
         const currentDate = new Date();
         const currentMonth = currentDate.getMonth();
         const currentYear = currentDate.getFullYear();
@@ -86,7 +89,6 @@ const AdminDashboard = () => {
           return bookingDate.getMonth() === currentMonth && bookingDate.getFullYear() === currentYear;
         }).length;
 
-        // Update dashboard data
         setDashboardData({
           totalUsers: users.length,
           totalProperties: properties.length,
@@ -94,7 +96,7 @@ const AdminDashboard = () => {
           lastSync: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
           bookingsThisMonth,
           totalRevenue: `R$ ${totalRevenue.toFixed(2).replace('.', ',')}`,
-          occupancyRate: '78%', // This would require more complex calculation in real app
+          occupancyRate: '78%',
           popularChannels: channelDistribution.slice(0, 4),
           recentActivity: [
             { id: 1, content: 'Nova reserva criada para Apartamento Luxo Centro', date: '15 min atrás', type: 'booking' },
@@ -145,15 +147,15 @@ const AdminDashboard = () => {
     <DashboardLayout adminOnly>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Painel Administrativo</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white font-sora">Painel Administrativo</h1>
           <div className="flex items-center gap-3">
             <button 
               className="btn-secondary flex items-center gap-2"
-              onClick={toggleTheme}
-              title={theme === 'dark' ? 'Mudar para modo claro' : 'Mudar para modo escuro'}
+              onClick={() => setShowColorModal(true)}
+              title="Esquema de cores"
             >
-              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-              <span className="hidden sm:inline">{theme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}</span>
+              <Palette size={16} />
+              <span className="hidden sm:inline">Cores</span>
             </button>
             
             <button 
@@ -167,7 +169,6 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Overview Cards */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <div className="card-dashboard">
             <div className="flex items-start justify-between">
@@ -219,7 +220,6 @@ const AdminDashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {/* Statistics Card */}
           <div className="card-dashboard lg:col-span-2">
             <h3 className="text-lg font-medium text-gray-900 dark:text-white">Visão Geral</h3>
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -257,7 +257,6 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          {/* Channels Distribution */}
           <div className="card-dashboard">
             <h3 className="text-lg font-medium text-gray-900 dark:text-white">Distribuição de Canais</h3>
             <div className="mt-4 space-y-3">
@@ -285,7 +284,6 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Recent Activity */}
         <div className="card-dashboard">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white">Atividade Recente</h3>
           <div className="mt-4 flow-root">
@@ -322,6 +320,66 @@ const AdminDashboard = () => {
           </div>
         </div>
       </div>
+
+      {showColorModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="w-full max-w-md rounded-xl bg-white dark:bg-gray-800 shadow-lg transition-all">
+            <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white font-sora">Configurações de Aparência</h3>
+              <button
+                onClick={() => setShowColorModal(false)}
+                className="rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500 dark:text-gray-300 dark:hover:bg-gray-700"
+              >
+                <RefreshCw size={20} />
+              </button>
+            </div>
+            
+            <div className="p-6">
+              <div className="mb-6">
+                <h4 className="font-medium mb-3 text-gray-800 dark:text-white">Modo de Exibição</h4>
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {theme === 'dark' ? 'Modo Escuro' : 'Modo Claro'}
+                  </span>
+                  <button
+                    onClick={() => {
+                      const newTheme = theme === 'dark' ? 'light' : 'dark';
+                      document.documentElement.classList.toggle('dark');
+                      localStorage.setItem('frontdesk_theme', newTheme);
+                    }}
+                    className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    {theme === 'dark' ? 'Mudar para Claro' : 'Mudar para Escuro'}
+                  </button>
+                </div>
+              </div>
+              
+              <h4 className="font-medium mb-3 text-gray-800 dark:text-white">Esquema de Cores</h4>
+              <div className="grid grid-cols-2 gap-4">
+                {colorSchemes.map((scheme) => (
+                  <button
+                    key={scheme.name}
+                    className="flex flex-col items-center p-4 border rounded-lg hover:shadow-md transition-all"
+                    onClick={() => {
+                      document.documentElement.style.setProperty('--primary-color', scheme.primary);
+                      document.documentElement.style.setProperty('--secondary-color', scheme.secondary);
+                      document.documentElement.classList.remove('theme-purple', 'theme-blue', 'theme-green', 'theme-red', 'theme-orange', 'theme-pink');
+                      document.documentElement.classList.add(`theme-${scheme.name.toLowerCase().split(' ')[0]}`);
+                      setShowColorModal(false);
+                    }}
+                  >
+                    <div className="flex space-x-2 mb-2">
+                      <div className="w-6 h-6 rounded-full" style={{ backgroundColor: scheme.primary }}></div>
+                      <div className="w-6 h-6 rounded-full" style={{ backgroundColor: scheme.secondary }}></div>
+                    </div>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">{scheme.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 };
