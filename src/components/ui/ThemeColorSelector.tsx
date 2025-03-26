@@ -20,8 +20,8 @@ const ThemeColorSelector = () => {
       id: 'blue',
       name: 'Azul',
       mainColor: '#3B82F6',
-      accentColor: '#1D4ED8',
-      hoverColor: '#2563EB'
+      accentColor: '#2563EB',
+      hoverColor: '#1D4ED8'
     },
     {
       id: 'green',
@@ -71,8 +71,8 @@ const ThemeColorSelector = () => {
         {colorOptions.map((option) => (
           <button
             key={option.id}
-            className={`flex flex-col items-center p-3 border rounded-md hover:bg-gray-50 transition-colors ${
-              currentTheme === option.id ? 'border-frontdesk-500 ring-2 ring-frontdesk-200' : 'border-gray-200'
+            className={`flex flex-col items-center p-3 border rounded-[10px] hover:bg-gray-50 transition-colors ${
+              currentTheme === option.id ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'
             }`}
             onClick={() => handleColorSelect(option.id)}
           >

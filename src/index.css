@@ -5,8 +5,8 @@
 
 :root {
   --frontdesk-500: #3B82F6;
-  --frontdesk-600: #1D4ED8;
-  --frontdesk-700: #2563EB;
+  --frontdesk-600: #2563EB;
+  --frontdesk-700: #1D4ED8;
 }
 
 @layer base {
@@ -90,7 +90,6 @@ body * {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Removing the display: block rule that was causing issues */
-/* img, svg, video, canvas, audio, iframe, embed, object {
-  display: block;
-} */
+/* Removing the display: block rule that was causing issues with the sidebar icons */
+/* Note: This line was removed as requested */
+

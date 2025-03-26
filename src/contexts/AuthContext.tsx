@@ -1,5 +1,6 @@
 
 import React, { createContext, useState, useEffect } from 'react';
+import { toast } from "@/hooks/use-toast";
 
 interface User {
   id: string;
@@ -8,6 +9,7 @@ interface User {
   role: 'admin' | 'user';
   apiConnected: boolean;
   token?: string;
+  isNewUser?: boolean;
 }
 
 interface AuthContextType {
@@ -18,6 +20,7 @@ interface AuthContextType {
   logout: () => void;
   updateApiConnection: (connected: boolean, token?: string) => void;
   disconnectApi: () => void;
+  setUserAsReturning: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -28,6 +31,7 @@ export const AuthContext = createContext<AuthContextType>({
   logout: () => {},
   updateApiConnection: () => {},
   disconnectApi: () => {},
+  setUserAsReturning: () => {},
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -49,35 +53,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Mock login functionality
-    if (email === 'admin@frontdesk.com.br' && password === 'admin123') {
+    // Updated login credentials
+    if (email === 'contato.frontdesk@gmail.com' && password === 'Padrao@01') {
       const adminUser: User = {
         id: '1',
         name: 'Admin',
-        email: 'admin@frontdesk.com.br',
+        email: 'contato.frontdesk@gmail.com',
         role: 'admin',
-        apiConnected: false
+        apiConnected: false,
+        isNewUser: !localStorage.getItem('admin_returning')
       };
       
       setUser(adminUser);
       setIsAuthenticated(true);
       localStorage.setItem('user', JSON.stringify(adminUser));
+      toast({
+        title: "Login realizado com sucesso",
+        description: "Bem-vindo de volta!",
+      });
       return true;
-    } else if (email === 'user@frontdesk.com.br' && password === 'user123') {
+    } else if (email === 'usuario@frontdesk.com.br' && password === 'Padrao@01') {
       const regularUser: User = {
         id: '2',
         name: 'User Test',
-        email: 'user@frontdesk.com.br',
+        email: 'usuario@frontdesk.com.br',
         role: 'user',
-        apiConnected: false
+        apiConnected: false,
+        isNewUser: !localStorage.getItem('user_returning')
       };
       
       setUser(regularUser);
       setIsAuthenticated(true);
       localStorage.setItem('user', JSON.stringify(regularUser));
+      toast({
+        title: "Login realizado com sucesso",
+        description: "Bem-vindo de volta!",
+      });
       return true;
     }
     
+    toast({
+      title: "Erro de autenticação",
+      description: "E-mail ou senha inválidos",
+      variant: "destructive",
+    });
     return false;
   };
 
@@ -85,6 +104,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     setIsAuthenticated(false);
     localStorage.removeItem('user');
+    toast({
+      title: "Logout realizado",
+      description: "Você desconectou da sua conta",
+    });
   };
 
   const updateApiConnection = (connected: boolean, token?: string) => {
@@ -110,6 +133,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       setUser(updatedUser);
       localStorage.setItem('user', JSON.stringify(updatedUser));
+      toast({
+        title: "API desconectada",
+        description: "Sua conexão com a API foi removida",
+      });
+    }
+  };
+
+  const setUserAsReturning = () => {
+    if (user) {
+      const key = user.role === 'admin' ? 'admin_returning' : 'user_returning';
+      localStorage.setItem(key, 'true');
+      
+      const updatedUser = {
+        ...user,
+        isNewUser: false
+      };
+      
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
     }
   };
 
@@ -120,7 +162,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login,
     logout,
     updateApiConnection,
-    disconnectApi
+    disconnectApi,
+    setUserAsReturning
   };
 
   return (

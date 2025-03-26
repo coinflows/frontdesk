@@ -1,12 +1,15 @@
-
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import { Calendar, DollarSign, Users, Clock, Building2, RefreshCw } from 'lucide-react';
 import { formatCurrency, getCurrentMonthName } from '../../utils/formatters';
 import Modal from '../../components/ui/Modal';
+import WelcomeModal from '../../components/ui/WelcomeModal';
+import { useAuth } from '@/hooks/useAuth';
 
 const UserDashboard = () => {
+  const { user } = useAuth();
   const [showPropertyModal, setShowPropertyModal] = useState(false);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [propertyForm, setPropertyForm] = useState({
     name: 'Apartamento Luxo Centro',
     propId: '1001',
@@ -19,13 +22,18 @@ const UserDashboard = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    // Check if this is first login (in a real app, this would be stored in the backend)
-    const isFirstLogin = !localStorage.getItem('frontdesk_property_setup');
+    // Check if this is first login
+    if (user?.isNewUser) {
+      setShowWelcomeModal(true);
+    }
     
-    if (isFirstLogin) {
+    // Check if property setup is needed
+    const isPropertySetup = localStorage.getItem('frontdesk_property_setup');
+    
+    if (!isPropertySetup && !user?.isNewUser) {
       setShowPropertyModal(true);
     }
-  }, []);
+  }, [user]);
 
   const handlePropertySetup = () => {
     setIsSubmitting(true);
@@ -43,7 +51,6 @@ const UserDashboard = () => {
     setPropertyForm(prev => ({ ...prev, [name]: value }));
   };
 
-  // In a real app, this data would come from API calls
   const dashboardData = {
     nextCheckin: {
       guest: 'João Silva',
@@ -311,6 +318,12 @@ const UserDashboard = () => {
         </div>
       </div>
 
+      {/* Welcome Modal for New Users */}
+      <WelcomeModal 
+        isOpen={showWelcomeModal}
+        onClose={() => setShowWelcomeModal(false)}
+      />
+
       {/* Property Setup Modal */}
       <Modal
         isOpen={showPropertyModal}
@@ -436,3 +449,4 @@ const UserDashboard = () => {
 };
 
 export default UserDashboard;
+

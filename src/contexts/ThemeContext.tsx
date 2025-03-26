@@ -6,9 +6,9 @@ type ThemeMode = 'light' | 'dark';
 
 interface ThemeContextProps {
   currentTheme: ThemeType;
-  theme: ThemeMode;  // Added missing property
+  theme: ThemeMode;
   setTheme: (theme: ThemeType) => void;
-  toggleTheme: () => void;  // Added missing function
+  toggleTheme: () => void;
 }
 
 export const ThemeContext = createContext<ThemeContextProps>({
@@ -18,9 +18,14 @@ export const ThemeContext = createContext<ThemeContextProps>({
   toggleTheme: () => {},
 });
 
+// Frontdesk blue color constants
+const FRONTDESK_BLUE_500 = '#3B82F6';
+const FRONTDESK_BLUE_600 = '#2563EB';
+const FRONTDESK_BLUE_700 = '#1D4ED8';
+
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentTheme, setCurrentTheme] = useState<ThemeType>(() => {
-    // Get theme from localStorage if available
+    // Get theme from localStorage if available, default to blue
     const savedTheme = localStorage.getItem('theme');
     return (savedTheme as ThemeType) || 'blue';
   });
@@ -44,9 +49,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // Update the theme variables
     switch (currentTheme) {
       case 'blue':
-        root.style.setProperty('--frontdesk-500', '#3B82F6');
-        root.style.setProperty('--frontdesk-600', '#1D4ED8');
-        root.style.setProperty('--frontdesk-700', '#2563EB');
+        root.style.setProperty('--frontdesk-500', FRONTDESK_BLUE_500);
+        root.style.setProperty('--frontdesk-600', FRONTDESK_BLUE_600);
+        root.style.setProperty('--frontdesk-700', FRONTDESK_BLUE_700);
         break;
       case 'green':
         root.style.setProperty('--frontdesk-500', '#10B981');
@@ -74,10 +79,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         root.style.setProperty('--frontdesk-700', '#0F766E');
         break;
       default:
-        // Default to blue
-        root.style.setProperty('--frontdesk-500', '#3B82F6');
-        root.style.setProperty('--frontdesk-600', '#1D4ED8');
-        root.style.setProperty('--frontdesk-700', '#2563EB');
+        // Default to Frontdesk blue
+        root.style.setProperty('--frontdesk-500', FRONTDESK_BLUE_500);
+        root.style.setProperty('--frontdesk-600', FRONTDESK_BLUE_600);
+        root.style.setProperty('--frontdesk-700', FRONTDESK_BLUE_700);
     }
     
     // Save to localStorage
