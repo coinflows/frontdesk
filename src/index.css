@@ -21,7 +21,7 @@
 
 @layer components {
   .card-dashboard {
-    @apply rounded-[15px] border border-gray-100 bg-white p-5 shadow-sm;
+    @apply rounded-[10px] border border-gray-100 bg-white p-5 shadow-sm;
   }
   
   .input-control {
@@ -29,19 +29,19 @@
   }
   
   .btn-primary {
-    @apply rounded-[15px] bg-[var(--frontdesk-600)] px-4 py-2 font-medium text-white shadow-sm hover:bg-[var(--frontdesk-700)] focus:outline-none focus:ring-2 focus:ring-[var(--frontdesk-500)] focus:ring-offset-2;
+    @apply rounded-[10px] bg-[var(--frontdesk-600)] px-4 py-2 font-medium text-white shadow-sm hover:bg-[var(--frontdesk-700)] focus:outline-none focus:ring-2 focus:ring-[var(--frontdesk-500)] focus:ring-offset-2;
   }
   
   .btn-secondary {
-    @apply rounded-[15px] border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[var(--frontdesk-500)] focus:ring-offset-2;
+    @apply rounded-[10px] border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[var(--frontdesk-500)] focus:ring-offset-2;
   }
 
   .btn-success {
-    @apply rounded-[15px] bg-green-600 px-4 py-2 font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2;
+    @apply rounded-[10px] bg-green-600 px-4 py-2 font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2;
   }
 
   .btn-danger {
-    @apply rounded-[15px] bg-red-600 px-4 py-2 font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
+    @apply rounded-[10px] bg-red-600 px-4 py-2 font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
   }
   
   .badge {
@@ -67,6 +67,14 @@
   .badge-gray {
     @apply bg-gray-100 text-gray-800;
   }
+  
+  .sidebar-link {
+    @apply flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-gray-600 transition-colors hover:bg-gray-100;
+  }
+  
+  .sidebar-link.active {
+    @apply bg-frontdesk-500/10 text-frontdesk-600 font-medium;
+  }
 }
 
 /* Calendar Grid Styles */
@@ -81,3 +89,8 @@ body * {
   transition-duration: 200ms;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* Removing the display: block rule that was causing issues */
+/* img, svg, video, canvas, audio, iframe, embed, object {
+  display: block;
+} */

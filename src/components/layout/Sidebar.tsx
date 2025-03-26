@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   ChevronLeft, 
@@ -104,7 +104,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Navigation Links */}
         <nav className="flex-1 overflow-y-auto py-4">
-          <ul className="space-y-1 px-2">
+          <ul className="space-y-3 px-3">
             {links.map((link) => (
               <li key={link.to}>
                 <Link
@@ -113,23 +113,32 @@ const Sidebar: React.FC<SidebarProps> = ({
                     location.pathname === link.to ? 'active' : ''
                   } ${collapsed ? 'justify-center' : ''}`}
                 >
-                  {link.icon}
-                  {!collapsed && <span>{link.label}</span>}
+                  <span className="flex-shrink-0">{link.icon}</span>
+                  {!collapsed && <span className="truncate">{link.label}</span>}
                 </Link>
               </li>
             ))}
           </ul>
         </nav>
 
-        {/* API Connection Status */}
-        <div className="border-t p-4">
+        {/* Theme and API Connection Status */}
+        <div className="mt-auto space-y-3 border-t p-4">
+          <button
+            onClick={toggleColorSchemeModal}
+            className={`sidebar-link ${collapsed ? 'justify-center' : ''} text-gray-600`}
+            title="Personalizar cores"
+          >
+            <span className="flex-shrink-0"><Palette size={20} /></span>
+            {!collapsed && <span className="truncate">Personalizar Cores</span>}
+          </button>
+          
           <button
             onClick={toggleTokenModal}
             className={`sidebar-link ${collapsed ? 'justify-center' : ''} ${isConnected ? 'text-green-500' : 'text-red-500'}`}
             title={isConnected ? 'Conectado - Clique para gerenciar' : 'Desconectado - Clique para conectar'}
           >
-            {isConnected ? <Wifi size={20} /> : <WifiOff size={20} />}
-            {!collapsed && <span>{isConnected ? 'API Conectada' : 'API Desconectada'}</span>}
+            <span className="flex-shrink-0">{isConnected ? <Wifi size={20} /> : <WifiOff size={20} />}</span>
+            {!collapsed && <span className="truncate">{isConnected ? 'API Conectada' : 'API Desconectada'}</span>}
           </button>
         </div>
 
@@ -139,8 +148,8 @@ const Sidebar: React.FC<SidebarProps> = ({
             onClick={logout}
             className={`sidebar-link ${collapsed ? 'justify-center' : ''}`}
           >
-            <LogOut size={20} />
-            {!collapsed && <span>Sair</span>}
+            <span className="flex-shrink-0"><LogOut size={20} /></span>
+            {!collapsed && <span className="truncate">Sair</span>}
           </button>
         </div>
       </div>

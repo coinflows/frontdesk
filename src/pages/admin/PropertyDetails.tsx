@@ -130,7 +130,7 @@ const PropertyDetails = () => {
       </div>
       
       {/* Property Details Header */}
-      <div className="rounded-[15px] overflow-hidden bg-white shadow-sm mb-8">
+      <div className="rounded-[10px] overflow-hidden bg-white shadow-sm mb-8">
         <div className="relative h-64 w-full overflow-hidden">
           <img 
             src={property.images && property.images.length > 0 
@@ -218,7 +218,7 @@ const PropertyDetails = () => {
                   {bookings.slice(0, 5).map(booking => (
                     <div 
                       key={booking.bookId}
-                      className="border border-gray-200 rounded-[15px] p-4 bg-gray-50"
+                      className="border border-gray-200 rounded-[10px] p-4 bg-gray-50"
                     >
                       <div className="flex justify-between items-start mb-2">
                         <div>
@@ -256,7 +256,7 @@ const PropertyDetails = () => {
                   </Link>
                 </div>
               ) : (
-                <div className="text-gray-500 text-center py-6 border border-dashed border-gray-300 rounded-[15px]">
+                <div className="text-gray-500 text-center py-6 border border-dashed border-gray-300 rounded-[10px]">
                   Nenhuma reserva encontrada
                 </div>
               )}

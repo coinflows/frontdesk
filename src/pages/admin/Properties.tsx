@@ -2,12 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import DashboardLayout from '../../components/layout/DashboardLayout';
-import { Search, Eye, MapPin, Edit, RefreshCw, Bed, Home, Building2, Palette } from 'lucide-react';
+import { Search, Eye, MapPin, Edit, RefreshCw, Bed, Home, Building2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { getProperties } from '@/services/api';
 import { toast } from '@/components/ui/use-toast';
 import { formatCurrency } from '@/utils/formatters';
-import ColorSchemeModal from '@/components/ui/ColorSchemeModal';
 
 const Properties = () => {
   const { user } = useAuth();
@@ -15,7 +14,6 @@ const Properties = () => {
   const [filterType, setFilterType] = useState('all');
   const [properties, setProperties] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [colorModalOpen, setColorModalOpen] = useState(false);
 
   const fetchProperties = async () => {
     if (!user?.token) {
@@ -89,16 +87,7 @@ const Properties = () => {
     <DashboardLayout adminOnly>
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold text-gray-900 font-sora">Propriedades</h1>
-            <button 
-              className="text-gray-500 hover:text-[var(--frontdesk-600)]"
-              onClick={() => setColorModalOpen(true)}
-              title="Personalizar cores"
-            >
-              <Palette size={20} />
-            </button>
-          </div>
+          <h1 className="text-2xl font-bold text-gray-900 font-sora">Propriedades</h1>
           <button
             className="btn-primary mt-4 flex items-center gap-2 sm:mt-0"
             onClick={fetchProperties}
@@ -117,14 +106,14 @@ const Properties = () => {
             </div>
             <input
               type="text"
-              className="input-control rounded-[15px] pl-10 w-full"
+              className="input-control rounded-[10px] pl-10 w-full"
               placeholder="Buscar propriedades..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
           </div>
           <select 
-            className="input-control rounded-[15px] sm:w-48"
+            className="input-control rounded-[10px] sm:w-48"
             value={filterType}
             onChange={e => setFilterType(e.target.value)}
           >
@@ -140,7 +129,7 @@ const Properties = () => {
         {/* Properties Grid */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredProperties.map(property => (
-            <div key={property.propId} className="overflow-hidden rounded-[15px] border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md">
+            <div key={property.propId} className="overflow-hidden rounded-[10px] border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md">
               <div className="relative">
                 <img
                   src={property.images && property.images.length > 0 ? property.images[0] : 'https://placehold.co/400x300?text=Imagem+Indisponível'}
@@ -239,9 +228,6 @@ const Properties = () => {
           )}
         </div>
       </div>
-      
-      {/* Color scheme modal */}
-      <ColorSchemeModal isOpen={colorModalOpen} onClose={() => setColorModalOpen(false)} />
     </DashboardLayout>
   );
 };

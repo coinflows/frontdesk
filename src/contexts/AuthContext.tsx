@@ -1,143 +1,130 @@
 
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 
 interface User {
   id: string;
+  name: string;
   email: string;
-  name?: string;
   role: 'admin' | 'user';
-  token?: string;
   apiConnected: boolean;
+  token?: string;
 }
 
 interface AuthContextType {
+  isAuthenticated: boolean;
   user: User | null;
+  isLoading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
-  loading: boolean;
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  setApiConnected: (connected: boolean) => void;
-  setUserToken: (token: string) => void;
-  updateApiConnection: (connected: boolean, token: string) => void;
+  updateApiConnection: (connected: boolean, token?: string) => void;
+  disconnectApi: () => void;
 }
 
-// Token padrão para iniciar já conectado
-const DEFAULT_TOKEN = 'U51gBw5Si1hKKHk78czHCNpysUX/5/zGupZAaLjImfYctuc9eFoIlVBUFrpX9PBJU4uNj+koeqJA+FuvhRu9DFKPHzrs+BEOMX/pT+zruycX+zkjwaeovrPTvDO3vPBF6kwDSpQ8TT/4uff/+lc/LUPiaxqLa+4cIP+HWZvx9Eo=';
-
-const ADMIN_USER = {
-  id: '1',
-  email: 'contato.frontdesk@gmail.com',
-  name: 'Admin',
-  role: 'admin' as const,
-  apiConnected: true,
-  token: DEFAULT_TOKEN
-};
-
-const REGULAR_USER = {
-  id: '2',
-  email: 'usuario@frontdesk.com.br',
-  name: 'Usuário',
-  role: 'user' as const,
-  apiConnected: true,
-  token: DEFAULT_TOKEN
-};
-
 export const AuthContext = createContext<AuthContextType>({
+  isAuthenticated: false,
   user: null,
+  isLoading: true,
   login: async () => false,
   logout: () => {},
-  loading: true,
-  isLoading: true,
-  isAuthenticated: false,
-  setApiConnected: () => {},
-  setUserToken: () => {},
-  updateApiConnection: () => {}
+  updateApiConnection: () => {},
+  disconnectApi: () => {},
 });
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('frontdesk_user');
+    // Check if user is logged in from localStorage
+    const storedUser = localStorage.getItem('user');
+    
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
-      // Ensure the user has the token and active API connection
-      if (!parsedUser.token) {
-        parsedUser.token = DEFAULT_TOKEN;
-        parsedUser.apiConnected = true;
-        localStorage.setItem('frontdesk_user', JSON.stringify(parsedUser));
-      }
       setUser(parsedUser);
+      setIsAuthenticated(true);
     }
-    setLoading(false);
+    
+    setIsLoading(false);
   }, []);
 
-  const isAuthenticated = user !== null;
-
   const login = async (email: string, password: string): Promise<boolean> => {
-    setLoading(true);
-    
-    if (email === ADMIN_USER.email && password === 'Acesso@01') {
-      const userData = {...ADMIN_USER};
-      setUser(userData);
-      localStorage.setItem('frontdesk_user', JSON.stringify(userData));
-      setLoading(false);
+    // Mock login functionality
+    if (email === 'admin@frontdesk.com.br' && password === 'admin123') {
+      const adminUser: User = {
+        id: '1',
+        name: 'Admin',
+        email: 'admin@frontdesk.com.br',
+        role: 'admin',
+        apiConnected: false
+      };
+      
+      setUser(adminUser);
+      setIsAuthenticated(true);
+      localStorage.setItem('user', JSON.stringify(adminUser));
       return true;
-    } else if (email === REGULAR_USER.email && password === 'Acesso@01') {
-      const userData = {...REGULAR_USER};
-      setUser(userData);
-      localStorage.setItem('frontdesk_user', JSON.stringify(userData));
-      setLoading(false);
+    } else if (email === 'user@frontdesk.com.br' && password === 'user123') {
+      const regularUser: User = {
+        id: '2',
+        name: 'User Test',
+        email: 'user@frontdesk.com.br',
+        role: 'user',
+        apiConnected: false
+      };
+      
+      setUser(regularUser);
+      setIsAuthenticated(true);
+      localStorage.setItem('user', JSON.stringify(regularUser));
       return true;
     }
     
-    setLoading(false);
     return false;
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('frontdesk_user');
+    setIsAuthenticated(false);
+    localStorage.removeItem('user');
   };
 
-  const setApiConnected = (connected: boolean) => {
+  const updateApiConnection = (connected: boolean, token?: string) => {
     if (user) {
-      const updatedUser = { ...user, apiConnected: connected };
+      const updatedUser = { 
+        ...user, 
+        apiConnected: connected,
+        token: token || user.token 
+      };
+      
       setUser(updatedUser);
-      localStorage.setItem('frontdesk_user', JSON.stringify(updatedUser));
+      localStorage.setItem('user', JSON.stringify(updatedUser));
     }
   };
 
-  const setUserToken = (token: string) => {
+  const disconnectApi = () => {
     if (user) {
-      const updatedUser = { ...user, token };
+      const updatedUser = { 
+        ...user, 
+        apiConnected: false,
+        token: undefined
+      };
+      
       setUser(updatedUser);
-      localStorage.setItem('frontdesk_user', JSON.stringify(updatedUser));
+      localStorage.setItem('user', JSON.stringify(updatedUser));
     }
   };
 
-  const updateApiConnection = (connected: boolean, token: string) => {
-    if (user) {
-      const updatedUser = { ...user, apiConnected: connected, token };
-      setUser(updatedUser);
-      localStorage.setItem('frontdesk_user', JSON.stringify(updatedUser));
-    }
+  const contextValue: AuthContextType = {
+    isAuthenticated,
+    user,
+    isLoading,
+    login,
+    logout,
+    updateApiConnection,
+    disconnectApi
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      login, 
-      logout, 
-      loading, 
-      isLoading: loading, 
-      isAuthenticated,
-      setApiConnected, 
-      setUserToken,
-      updateApiConnection 
-    }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

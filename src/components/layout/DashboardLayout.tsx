@@ -5,7 +5,6 @@ import Sidebar from './Sidebar';
 import { useAuth } from '../../hooks/useAuth';
 import TokenModal from '../ui/TokenModal';
 import ColorSchemeModal from '../ui/ColorSchemeModal';
-import { Palette } from 'lucide-react';
 
 interface DashboardLayoutProps {
   adminOnly?: boolean;
@@ -75,17 +74,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ adminOnly = false, ch
           sidebarCollapsed ? 'ml-20' : 'ml-64'
         }`}
       >
-        <div className="flex justify-end mb-4">
-          <button
-            onClick={toggleColorSchemeModal}
-            className="flex items-center gap-2 px-3 py-2 bg-white rounded-md shadow-sm hover:bg-gray-50 transition-colors"
-            title="Alterar esquema de cores"
-          >
-            <Palette size={18} />
-            <span>Cores</span>
-          </button>
-        </div>
-        
         {children}
       </main>
 

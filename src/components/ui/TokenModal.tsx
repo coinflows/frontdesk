@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, Check, Loader2 } from 'lucide-react';
+import { X, Check, Loader2, Trash2, WifiOff, List } from 'lucide-react';
 import { toast } from './use-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { validateToken } from '@/services/api';
+import { validateToken, getProperties } from '@/services/api';
 
 interface TokenModalProps {
   isOpen: boolean;
@@ -16,11 +16,14 @@ interface ValidationResult {
 }
 
 const TokenModal = ({ isOpen, onClose }: TokenModalProps) => {
-  const { user, updateApiConnection } = useAuth();
+  const { user, updateApiConnection, disconnectApi } = useAuth();
   const [isAnimating, setIsAnimating] = useState(false);
   const [token, setToken] = useState(user?.token || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
+  const [isCheckingData, setIsCheckingData] = useState(false);
+  const [apiData, setApiData] = useState<any[] | null>(null);
+  const [isDeletingDemoData, setIsDeletingDemoData] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -33,6 +36,7 @@ const TokenModal = ({ isOpen, onClose }: TokenModalProps) => {
   const handleClose = () => {
     setIsAnimating(false);
     setValidationResult(null);
+    setApiData(null);
     setTimeout(() => {
       onClose();
     }, 300);
@@ -42,6 +46,17 @@ const TokenModal = ({ isOpen, onClose }: TokenModalProps) => {
     if (e.target === e.currentTarget) {
       handleClose();
     }
+  };
+
+  const handleDisconnect = () => {
+    disconnectApi();
+    setValidationResult(null);
+    setApiData(null);
+    toast({
+      title: "Desconectado",
+      description: "Conexão com a API Beds24 desativada com sucesso.",
+      variant: "default",
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -127,6 +142,63 @@ const TokenModal = ({ isOpen, onClose }: TokenModalProps) => {
     }
   };
 
+  const handleCheckApiData = async () => {
+    if (!user?.token) {
+      toast({
+        title: "Erro",
+        description: "Você precisa estar conectado à API para verificar os dados.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsCheckingData(true);
+    setApiData(null);
+
+    try {
+      const result = await getProperties(user.token);
+      
+      if (result.success && result.data) {
+        setApiData(result.data.slice(0, 3)); // Only show first 3 properties
+        
+        toast({
+          title: "Dados recuperados",
+          description: `${result.data.length} propriedades encontradas na API.`,
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Erro",
+          description: "Falha ao recuperar dados da API.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error checking API data:", error);
+      toast({
+        title: "Erro",
+        description: "Ocorreu um erro ao verificar os dados da API.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCheckingData(false);
+    }
+  };
+
+  const handleDeleteDemoData = () => {
+    setIsDeletingDemoData(true);
+    
+    // Simulating deletion of demo data
+    setTimeout(() => {
+      toast({
+        title: "Dados demonstrativos removidos",
+        description: "Os dados de demonstração foram removidos com sucesso.",
+        variant: "default",
+      });
+      setIsDeletingDemoData(false);
+    }, 1500);
+  };
+
   if (!isOpen && !isAnimating) return null;
 
   return (
@@ -137,7 +209,7 @@ const TokenModal = ({ isOpen, onClose }: TokenModalProps) => {
       onClick={handleBackdropClick}
     >
       <div
-        className={`max-w-lg w-full rounded-xl bg-white shadow-lg transition-all duration-300 ${
+        className={`max-w-lg w-full rounded-[10px] bg-white shadow-lg transition-all duration-300 ${
           isAnimating ? 'translate-y-0 scale-100' : 'translate-y-4 scale-95'
         }`}
       >
@@ -154,22 +226,36 @@ const TokenModal = ({ isOpen, onClose }: TokenModalProps) => {
         <div className="px-6 py-4">
           <form onSubmit={handleSubmit}>
             <div className="space-y-4">
-              <div>
-                <label htmlFor="api-token" className="block text-sm font-medium text-gray-700">
-                  Token de Acesso
-                </label>
-                <textarea
-                  id="api-token"
-                  rows={4}
-                  className="mt-1 input-control w-full"
-                  value={token}
-                  onChange={(e) => setToken(e.target.value)}
-                  placeholder="Cole seu token de acesso da API Beds24..."
-                />
-                <p className="mt-1 text-xs text-gray-500">
-                  Obtenha seu token de acesso no painel da Beds24 em Configurações &gt; Integrações &gt; API v2.
-                </p>
-              </div>
+              {user?.apiConnected ? (
+                <div className="p-3 rounded-md bg-green-50 text-green-700 mb-4">
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0">
+                      <Check className="h-5 w-5 text-green-400" />
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm font-medium">API conectada com sucesso!</p>
+                      <p className="text-sm mt-1">Você pode gerenciar sua conexão abaixo.</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <label htmlFor="api-token" className="block text-sm font-medium text-gray-700">
+                    Token de Acesso
+                  </label>
+                  <textarea
+                    id="api-token"
+                    rows={4}
+                    className="mt-1 input-control w-full"
+                    value={token}
+                    onChange={(e) => setToken(e.target.value)}
+                    placeholder="Cole seu token de acesso da API Beds24..."
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    Obtenha seu token de acesso no painel da Beds24 em Configurações &gt; Integrações &gt; API v2.
+                  </p>
+                </div>
+              )}
               
               {validationResult && (
                 <div className={`p-3 rounded-md ${
@@ -191,29 +277,100 @@ const TokenModal = ({ isOpen, onClose }: TokenModalProps) => {
                   </div>
                 </div>
               )}
+
+              {apiData && (
+                <div className="mt-4 p-4 bg-gray-50 rounded-md">
+                  <h4 className="text-sm font-semibold mb-2">Dados recuperados da API (primeiras 3 propriedades):</h4>
+                  <div className="space-y-3 max-h-40 overflow-y-auto">
+                    {apiData.map((property, index) => (
+                      <div key={index} className="p-2 bg-white rounded border border-gray-200 text-sm">
+                        <p className="font-medium">{property.name}</p>
+                        <p className="text-xs text-gray-500">{property.address}, {property.city}</p>
+                        <div className="flex gap-2 mt-1 text-xs">
+                          <span className="bg-gray-100 px-1.5 py-0.5 rounded">{property.type}</span>
+                          <span className="bg-gray-100 px-1.5 py-0.5 rounded">{property.maxGuests} hóspedes</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               
-              <div className="flex justify-end space-x-3 pt-4">
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={handleClose}
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="btn-primary flex items-center"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      <span>Validando...</span>
-                    </>
-                  ) : (
-                    <span>Conectar API</span>
-                  )}
-                </button>
+              <div className="flex flex-wrap gap-3 pt-4">
+                {user?.apiConnected ? (
+                  <>
+                    <button
+                      type="button"
+                      className="btn-danger flex items-center"
+                      onClick={handleDisconnect}
+                    >
+                      <WifiOff className="mr-2 h-4 w-4" />
+                      <span>Desconectar API</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className="btn-secondary flex items-center"
+                      onClick={handleCheckApiData}
+                      disabled={isCheckingData}
+                    >
+                      {isCheckingData ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          <span>Verificando...</span>
+                        </>
+                      ) : (
+                        <>
+                          <List className="mr-2 h-4 w-4" />
+                          <span>Verificar Dados da API</span>
+                        </>
+                      )}
+                    </button>
+
+                    <button
+                      type="button"
+                      className="btn-secondary flex items-center"
+                      onClick={handleDeleteDemoData}
+                      disabled={isDeletingDemoData}
+                    >
+                      {isDeletingDemoData ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          <span>Removendo...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          <span>Remover Dados Demo</span>
+                        </>
+                      )}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      onClick={handleClose}
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn-primary flex items-center"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          <span>Validando...</span>
+                        </>
+                      ) : (
+                        <span>Conectar API</span>
+                      )}
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </form>
