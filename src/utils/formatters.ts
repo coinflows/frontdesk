@@ -47,6 +47,11 @@ export const getCurrentMonthName = (): string => {
   return monthNames[new Date().getMonth()];
 };
 
+// Obtém o ano atual
+export const getCurrentYear = (): number => {
+  return new Date().getFullYear();
+};
+
 // Obtém o URL do logo do canal de reserva
 export const getChannelLogo = (channelName: string): string => {
   if (!channelName) return '';

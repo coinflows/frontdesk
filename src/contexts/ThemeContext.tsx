@@ -4,11 +4,15 @@ import React, { createContext, useState, useEffect } from 'react';
 interface ThemeContextType {
   currentTheme: string;
   setTheme: (theme: string) => void;
+  theme: string;
+  toggleTheme: () => void;
 }
 
 export const ThemeContext = createContext<ThemeContextType>({
   currentTheme: 'blue',
   setTheme: () => {},
+  theme: 'light',
+  toggleTheme: () => {},
 });
 
 interface ThemeProviderProps {
@@ -20,6 +24,16 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     // Retrieve from local storage or use default
     return localStorage.getItem('frontdesk-theme') || 'blue';
   });
+
+  const [theme, setTheme] = useState<string>(() => {
+    return localStorage.getItem('frontdesk-theme-mode') || 'light';
+  });
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('frontdesk-theme-mode', newTheme);
+  };
 
   useEffect(() => {
     // Save theme to local storage when it changes
@@ -78,7 +92,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   };
 
   return (
-    <ThemeContext.Provider value={{ currentTheme, setTheme: setCurrentTheme }}>
+    <ThemeContext.Provider value={{ currentTheme, setTheme: setCurrentTheme, theme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );
