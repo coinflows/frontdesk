@@ -3,8 +3,9 @@ import React from 'react';
 import { Check } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 
+// Define the ColorOption interface
 interface ColorOption {
-  id: string;
+  id: 'blue' | 'green' | 'purple' | 'red' | 'amber' | 'teal';
   name: string;
   mainColor: string;
   accentColor: string;
@@ -59,7 +60,7 @@ const ThemeColorSelector = () => {
     },
   ];
 
-  const handleColorSelect = (colorId: string) => {
+  const handleColorSelect = (colorId: 'blue' | 'green' | 'purple' | 'red' | 'amber' | 'teal') => {
     setTheme(colorId);
   };
 
@@ -70,7 +71,7 @@ const ThemeColorSelector = () => {
         {colorOptions.map((option) => (
           <button
             key={option.id}
-            className={`flex flex-col items-center p-3 border rounded-lg hover:bg-gray-50 transition-colors ${
+            className={`flex flex-col items-center p-3 border rounded-md hover:bg-gray-50 transition-colors ${
               currentTheme === option.id ? 'border-frontdesk-500 ring-2 ring-frontdesk-200' : 'border-gray-200'
             }`}
             onClick={() => handleColorSelect(option.id)}
