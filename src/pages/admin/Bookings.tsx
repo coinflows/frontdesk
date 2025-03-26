@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/layout/DashboardLayout';
-import { Search, RefreshCw, Eye, Calendar, User, Filter } from 'lucide-react';
+import { Search, RefreshCw, Eye, Calendar, User, List, Filter, MessageSquare } from 'lucide-react';
 import { formatCurrency, formatDate, getChannelLogo } from '../../utils/formatters';
 import { useAuth } from '@/hooks/useAuth';
 import { getBookings } from '@/services/api';
@@ -13,7 +13,7 @@ const Bookings = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [bookings, setBookings] = useState<any[]>([]);
-  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('calendar');
+  const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar');
 
   const fetchBookings = async () => {
     if (!user?.token) {
@@ -86,6 +86,20 @@ const Bookings = () => {
     }
   };
 
+  const handleEditBooking = (bookingId: string) => {
+    toast({
+      title: "Editar reserva",
+      description: `Funcionalidade de edição da reserva ${bookingId} será implementada em breve.`,
+    });
+  };
+
+  const handleCancelBooking = (bookingId: string) => {
+    toast({
+      title: "Cancelar reserva",
+      description: `Funcionalidade de cancelamento da reserva ${bookingId} será implementada em breve.`,
+    });
+  };
+
   return (
     <DashboardLayout adminOnly>
       <div className="space-y-6">
@@ -98,10 +112,10 @@ const Bookings = () => {
                   viewMode === 'calendar'
                     ? 'bg-frontdesk-600 text-white'
                     : 'bg-white text-gray-700 hover:bg-gray-50'
-                } rounded-l-md border border-gray-300`}
+                } rounded-l-md border border-gray-300 flex items-center gap-1.5`}
                 onClick={() => setViewMode('calendar')}
               >
-                <Calendar size={16} className="mr-1 inline-block" />
+                <Calendar size={16} />
                 <span>Calendário</span>
               </button>
               <button
@@ -109,10 +123,10 @@ const Bookings = () => {
                   viewMode === 'list'
                     ? 'bg-frontdesk-600 text-white'
                     : 'bg-white text-gray-700 hover:bg-gray-50'
-                } rounded-r-md border border-l-0 border-gray-300`}
+                } rounded-r-md border border-l-0 border-gray-300 flex items-center gap-1.5`}
                 onClick={() => setViewMode('list')}
               >
-                <Filter size={16} className="mr-1 inline-block" />
+                <List size={16} />
                 <span>Lista</span>
               </button>
             </div>
@@ -145,7 +159,11 @@ const Bookings = () => {
         {/* Calendar View */}
         {viewMode === 'calendar' && (
           <div className="bg-white rounded-lg border shadow-sm overflow-hidden">
-            <BookingCalendar bookings={filteredBookings} />
+            <BookingCalendar 
+              bookings={filteredBookings} 
+              onEditBooking={handleEditBooking}
+              onCancelBooking={handleCancelBooking}
+            />
           </div>
         )}
 
@@ -203,8 +221,8 @@ const Bookings = () => {
                       <div className="flex items-center">
                         <Calendar size={14} className="mr-1" />
                         <div>
-                          <div>{formatDate(booking.dateFrom)}</div>
-                          <div>{formatDate(booking.dateTo)}</div>
+                          <div>{formatDate(booking.dateFrom)} {booking.timeCheckIn || '12:00'}</div>
+                          <div>{formatDate(booking.dateTo)} {booking.timeCheckOut || '14:00'}</div>
                           <div className="text-xs text-gray-400">
                             {
                               // Calculate nights
@@ -238,12 +256,26 @@ const Bookings = () => {
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                      <button
-                        className="rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-frontdesk-600"
-                        title="Ver detalhes"
-                      >
-                        <Eye size={16} />
-                      </button>
+                      <div className="flex items-center justify-end space-x-2">
+                        {booking.whatsapp && (
+                          <a
+                            href={`https://wa.me/${booking.whatsapp.replace(/\D/g, '')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rounded p-1 text-green-500 hover:bg-green-50"
+                            title="WhatsApp"
+                          >
+                            <MessageSquare size={16} />
+                          </a>
+                        )}
+                        <button
+                          className="rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-frontdesk-600"
+                          title="Ver detalhes"
+                          onClick={() => handleEditBooking(booking.bookId)}
+                        >
+                          <Eye size={16} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

@@ -50,6 +50,26 @@ export const validateToken = async (token: string) => {
       return { success: false, error: 'Token inválido' };
     }
     
+    // Attempt to make a real API call to Beds24
+    try {
+      const response = await fetch(`${API_BASE_URL}/getProperties`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'token': token
+        },
+        mode: 'cors',
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data: data.data || [] };
+      }
+    } catch (apiError) {
+      console.error("Failed to connect to actual API, using mock data:", apiError);
+    }
+    
+    // If API call fails, use mock data
     return { 
       success: true, 
       data: [
@@ -59,7 +79,7 @@ export const validateToken = async (token: string) => {
           address: 'Av. Paulista, 1000',
           city: 'São Paulo',
           type: 'apartment',
-          images: ['/lovable-uploads/f0811bbc-217f-4b0a-90d2-5e8d97a603e2.png'],
+          images: ['/lovable-uploads/98072037-459b-4f82-8b51-2e6a6902fafa.png'],
           maxGuests: 4,
           pricePerNight: 450
         },
@@ -69,7 +89,7 @@ export const validateToken = async (token: string) => {
           address: 'Rua da Praia, 123',
           city: 'Rio de Janeiro',
           type: 'house',
-          images: ['/lovable-uploads/f0811bbc-217f-4b0a-90d2-5e8d97a603e2.png'],
+          images: ['/lovable-uploads/98072037-459b-4f82-8b51-2e6a6902fafa.png'],
           maxGuests: 6,
           pricePerNight: 650
         },
@@ -79,7 +99,7 @@ export const validateToken = async (token: string) => {
           address: 'Estrada da Serra, 456',
           city: 'Campos do Jordão',
           type: 'cabin',
-          images: ['/lovable-uploads/f0811bbc-217f-4b0a-90d2-5e8d97a603e2.png'],
+          images: ['/lovable-uploads/98072037-459b-4f82-8b51-2e6a6902fafa.png'],
           maxGuests: 5,
           pricePerNight: 550
         },
@@ -90,7 +110,7 @@ export const validateToken = async (token: string) => {
           city: 'São Paulo',
           type: 'hotel',
           propertyGroup: 'Hotel Central',
-          images: ['/lovable-uploads/f0811bbc-217f-4b0a-90d2-5e8d97a603e2.png'],
+          images: ['/lovable-uploads/98072037-459b-4f82-8b51-2e6a6902fafa.png'],
           maxGuests: 2,
           pricePerNight: 300
         },
@@ -101,7 +121,7 @@ export const validateToken = async (token: string) => {
           city: 'São Paulo',
           type: 'hotel',
           propertyGroup: 'Hotel Central',
-          images: ['/lovable-uploads/f0811bbc-217f-4b0a-90d2-5e8d97a603e2.png'],
+          images: ['/lovable-uploads/98072037-459b-4f82-8b51-2e6a6902fafa.png'],
           maxGuests: 3,
           pricePerNight: 500
         },
@@ -113,7 +133,7 @@ export const validateToken = async (token: string) => {
           type: 'hostel',
           propertyGroup: 'Hostel Backpackers',
           beds: ['Beliche 1 - Inferior', 'Beliche 1 - Superior', 'Beliche 2 - Inferior'],
-          images: ['/lovable-uploads/f0811bbc-217f-4b0a-90d2-5e8d97a603e2.png'],
+          images: ['/lovable-uploads/98072037-459b-4f82-8b51-2e6a6902fafa.png'],
           maxGuests: 6,
           pricePerNight: 80
         }
@@ -137,6 +157,26 @@ export const getProperties = async (token: string) => {
       return { success: false, error: 'Token inválido' };
     }
     
+    // Attempt to make a real API call to Beds24
+    try {
+      const response = await fetch(`${API_BASE_URL}/getProperties`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'token': token
+        },
+        mode: 'cors',
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data: data.data || [] };
+      }
+    } catch (apiError) {
+      console.error("Failed to connect to actual API, using mock data:", apiError);
+    }
+    
+    // If API call fails, use mock data
     return { 
       success: true, 
       data: [
@@ -146,7 +186,7 @@ export const getProperties = async (token: string) => {
           address: 'Av. Paulista, 1000',
           city: 'São Paulo',
           type: 'apartment',
-          images: ['/lovable-uploads/f0811bbc-217f-4b0a-90d2-5e8d97a603e2.png'],
+          images: ['/lovable-uploads/98072037-459b-4f82-8b51-2e6a6902fafa.png'],
           maxGuests: 4,
           pricePerNight: 450
         },
@@ -156,7 +196,7 @@ export const getProperties = async (token: string) => {
           address: 'Rua da Praia, 123',
           city: 'Rio de Janeiro',
           type: 'house',
-          images: ['/lovable-uploads/f0811bbc-217f-4b0a-90d2-5e8d97a603e2.png'],
+          images: ['/lovable-uploads/98072037-459b-4f82-8b51-2e6a6902fafa.png'],
           maxGuests: 6,
           pricePerNight: 650
         },
@@ -166,7 +206,7 @@ export const getProperties = async (token: string) => {
           address: 'Estrada da Serra, 456',
           city: 'Campos do Jordão',
           type: 'cabin',
-          images: ['/lovable-uploads/f0811bbc-217f-4b0a-90d2-5e8d97a603e2.png'],
+          images: ['/lovable-uploads/98072037-459b-4f82-8b51-2e6a6902fafa.png'],
           maxGuests: 5,
           pricePerNight: 550
         },
@@ -177,7 +217,7 @@ export const getProperties = async (token: string) => {
           city: 'São Paulo',
           type: 'hotel',
           propertyGroup: 'Hotel Central',
-          images: ['/lovable-uploads/f0811bbc-217f-4b0a-90d2-5e8d97a603e2.png'],
+          images: ['/lovable-uploads/98072037-459b-4f82-8b51-2e6a6902fafa.png'],
           maxGuests: 2,
           pricePerNight: 300
         },
@@ -188,7 +228,7 @@ export const getProperties = async (token: string) => {
           city: 'São Paulo',
           type: 'hotel',
           propertyGroup: 'Hotel Central',
-          images: ['/lovable-uploads/f0811bbc-217f-4b0a-90d2-5e8d97a603e2.png'],
+          images: ['/lovable-uploads/98072037-459b-4f82-8b51-2e6a6902fafa.png'],
           maxGuests: 3,
           pricePerNight: 500
         },
@@ -200,7 +240,7 @@ export const getProperties = async (token: string) => {
           type: 'hostel',
           propertyGroup: 'Hostel Backpackers',
           beds: ['Beliche 1 - Inferior', 'Beliche 1 - Superior', 'Beliche 2 - Inferior'],
-          images: ['/lovable-uploads/f0811bbc-217f-4b0a-90d2-5e8d97a603e2.png'],
+          images: ['/lovable-uploads/98072037-459b-4f82-8b51-2e6a6902fafa.png'],
           maxGuests: 6,
           pricePerNight: 80
         }
@@ -224,6 +264,7 @@ export const getBookings = async (token: string, propId?: string) => {
       return { success: false, error: 'Token inválido' };
     }
     
+    // Mock bookings data with checkin/checkout times
     const bookings = [
       {
         bookId: 'B1001',
@@ -234,11 +275,14 @@ export const getBookings = async (token: string, propId?: string) => {
         children: 0,
         dateFrom: '2023-12-10',
         dateTo: '2023-12-15',
+        timeCheckIn: '12:00',
+        timeCheckOut: '14:00',
         status: 'confirmed',
         totalAmount: 800,
         channelName: 'Airbnb',
         phone: '254-555-1234',
-        email: 'michael@example.com'
+        email: 'michael@example.com',
+        whatsapp: '5511999991234'
       },
       {
         bookId: 'B1002',
@@ -249,11 +293,14 @@ export const getBookings = async (token: string, propId?: string) => {
         children: 1,
         dateFrom: '2023-12-12',
         dateTo: '2023-12-17',
+        timeCheckIn: '12:00',
+        timeCheckOut: '14:00',
         status: 'confirmed',
         totalAmount: 950,
         channelName: 'Booking.com',
         phone: '555-123-4567',
-        email: 'diana@example.com'
+        email: 'diana@example.com',
+        whatsapp: '5511999992345'
       },
       {
         bookId: 'B1003',
@@ -264,11 +311,14 @@ export const getBookings = async (token: string, propId?: string) => {
         children: 0,
         dateFrom: '2023-12-15',
         dateTo: '2023-12-20',
+        timeCheckIn: '12:00',
+        timeCheckOut: '14:00',
         status: 'confirmed',
         totalAmount: 750,
         channelName: 'Expedia',
         phone: '555-987-6543',
-        email: 'richard@example.com'
+        email: 'richard@example.com',
+        whatsapp: '5511999993456'
       },
       {
         bookId: 'B1004',
@@ -279,11 +329,14 @@ export const getBookings = async (token: string, propId?: string) => {
         children: 0,
         dateFrom: '2023-12-18',
         dateTo: '2023-12-22',
-        status: 'confirmed',
+        timeCheckIn: '12:00',
+        timeCheckOut: '14:00',
+        status: 'pending',
         totalAmount: 600,
         channelName: 'Direto',
         phone: '555-222-3333',
-        email: 'anne@example.com'
+        email: 'anne@example.com',
+        whatsapp: '5511999994567'
       },
       {
         bookId: 'B1005',
@@ -294,11 +347,14 @@ export const getBookings = async (token: string, propId?: string) => {
         children: 1,
         dateFrom: '2023-12-22',
         dateTo: '2023-12-28',
+        timeCheckIn: '12:00',
+        timeCheckOut: '14:00',
         status: 'confirmed',
         totalAmount: 1200,
         channelName: 'Airbnb',
         phone: '555-444-5555',
-        email: 'troy@example.com'
+        email: 'troy@example.com',
+        whatsapp: '5511999995678'
       },
       {
         bookId: 'B1006',
@@ -309,11 +365,50 @@ export const getBookings = async (token: string, propId?: string) => {
         children: 0,
         dateFrom: '2023-12-24',
         dateTo: '2023-12-27',
-        status: 'confirmed',
+        timeCheckIn: '12:00',
+        timeCheckOut: '14:00',
+        status: 'cancelled',
         totalAmount: 240,
         channelName: 'Hostelworld',
         phone: '555-666-7777',
-        email: 'eva@example.com'
+        email: 'eva@example.com',
+        whatsapp: '5511999996789'
+      },
+      {
+        bookId: 'B1007',
+        propId: '1001',
+        firstName: 'Carlos',
+        lastName: 'Henrique',
+        adults: 2,
+        children: 0,
+        dateFrom: '2023-12-30',
+        dateTo: '2024-01-05',
+        timeCheckIn: '12:00',
+        timeCheckOut: '14:00',
+        status: 'confirmed',
+        totalAmount: 900,
+        channelName: 'Booking.com',
+        phone: '555-777-8888',
+        email: 'carlos@example.com',
+        whatsapp: '5511999997890'
+      },
+      {
+        bookId: 'B1008',
+        propId: '1002',
+        firstName: 'Anna',
+        lastName: 'Barbosa',
+        adults: 3,
+        children: 1,
+        dateFrom: '2024-01-05',
+        dateTo: '2024-01-10',
+        timeCheckIn: '12:00',
+        timeCheckOut: '14:00',
+        status: 'confirmed',
+        totalAmount: 1100,
+        channelName: 'Airbnb',
+        phone: '555-888-9999',
+        email: 'anna@example.com',
+        whatsapp: '5511999998901'
       }
     ];
     
@@ -395,7 +490,7 @@ export const getAvailability = async (token: string, propId: string, dateFrom: s
   }
 };
 
-// Add missing getUsers function
+// Get users from Beds24 API
 export const getUsers = async (token: string) => {
   try {
     console.log("Getting users with token:", token);
@@ -436,6 +531,138 @@ export const getUsers = async (token: string) => {
     };
   } catch (error) {
     console.error('Error in getUsers:', error);
+    return { success: false, error: (error as Error).message };
+  }
+};
+
+// Get rooms for a property
+export const getRooms = async (token: string, propId: string) => {
+  try {
+    // Verify token is correct
+    const correctToken = 'U51gBw5Si1hKKHk78czHCNpysUX/5/zGupZAaLjImfYctuc9eFoIlVBUFrpX9PBJU4uNj+koeqJA+FuvhRu9DFKPHzrs+BEOMX/pT+zruycX+zkjwaeovrPTvDO3vPBF6kwDSpQ8TT/4uff/+lc/LUPiaxqLa+4cIP+HWZvx9Eo=';
+    
+    if (token !== correctToken) {
+      return { success: false, error: 'Token inválido' };
+    }
+    
+    // Get property details to determine type
+    const propertyResult = await getPropertyById(token, propId);
+    
+    if (!propertyResult.success || !propertyResult.data) {
+      return { success: false, error: 'Erro ao buscar detalhes da propriedade' };
+    }
+    
+    const property = propertyResult.data;
+    
+    // Return different room structures based on property type
+    let rooms = [];
+    
+    if (property.type === 'hotel' || property.type === 'hostel') {
+      rooms = [
+        {
+          roomId: 'R101',
+          propId: propId,
+          name: 'Quarto Standard',
+          number: '101',
+          description: 'Quarto com cama de casal, ar-condicionado e TV.',
+          images: ['/lovable-uploads/98072037-459b-4f82-8b51-2e6a6902fafa.png'],
+          maxGuests: 2,
+          basePrice: 200,
+          pricingType: 'room', // 'room', 'guest', or 'bed'
+          seasonalPrices: [
+            { 
+              name: 'Alta Temporada', 
+              startDate: '2023-12-15', 
+              endDate: '2024-01-15', 
+              price: 300
+            },
+            { 
+              name: 'Natal', 
+              startDate: '2023-12-24', 
+              endDate: '2023-12-26', 
+              price: 350
+            }
+          ]
+        },
+        {
+          roomId: 'R102',
+          propId: propId,
+          name: 'Suíte Luxo',
+          number: '102',
+          description: 'Suíte com cama king, banheira, ar-condicionado e TV 50".',
+          images: ['/lovable-uploads/98072037-459b-4f82-8b51-2e6a6902fafa.png'],
+          maxGuests: 2,
+          basePrice: 350,
+          pricingType: 'room',
+          seasonalPrices: [
+            { 
+              name: 'Alta Temporada', 
+              startDate: '2023-12-15', 
+              endDate: '2024-01-15', 
+              price: 450
+            }
+          ]
+        }
+      ];
+      
+      // Add beds for hostels
+      if (property.type === 'hostel') {
+        rooms.push({
+          roomId: 'R103',
+          propId: propId,
+          name: 'Quarto Compartilhado',
+          number: '103',
+          description: 'Quarto compartilhado com 6 camas em beliches.',
+          images: ['/lovable-uploads/98072037-459b-4f82-8b51-2e6a6902fafa.png'],
+          maxGuests: 6,
+          basePrice: 50,
+          pricingType: 'bed',
+          beds: [
+            { bedId: 'B1', name: 'Beliche 1 - Inferior', price: 50 },
+            { bedId: 'B2', name: 'Beliche 1 - Superior', price: 45 },
+            { bedId: 'B3', name: 'Beliche 2 - Inferior', price: 50 },
+            { bedId: 'B4', name: 'Beliche 2 - Superior', price: 45 },
+            { bedId: 'B5', name: 'Beliche 3 - Inferior', price: 50 },
+            { bedId: 'B6', name: 'Beliche 3 - Superior', price: 45 }
+          ],
+          seasonalPrices: [
+            { 
+              name: 'Alta Temporada', 
+              startDate: '2023-12-15', 
+              endDate: '2024-01-15', 
+              price: 65
+            }
+          ]
+        });
+      }
+    } else if (property.type === 'apartment' || property.type === 'house' || property.type === 'cabin') {
+      // For single-unit properties, return the property itself as the "room"
+      rooms = [
+        {
+          roomId: 'R100',
+          propId: propId,
+          name: property.name,
+          number: '100',
+          description: 'Unidade completa',
+          images: property.images || ['/lovable-uploads/98072037-459b-4f82-8b51-2e6a6902fafa.png'],
+          maxGuests: property.maxGuests || 2,
+          basePrice: property.pricePerNight || 200,
+          pricingType: 'unit',
+          seasonalPrices: [
+            { 
+              name: 'Alta Temporada', 
+              startDate: '2023-12-15', 
+              endDate: '2024-01-15', 
+              price: property.pricePerNight ? property.pricePerNight * 1.5 : 300
+            }
+          ]
+        }
+      ];
+    }
+    
+    return { success: true, data: rooms };
+  } catch (error) {
+    console.error('Error getting rooms:', error);
     return { success: false, error: (error as Error).message };
   }
 };

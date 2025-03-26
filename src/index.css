@@ -1,139 +1,83 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --frontdesk-500: #3B82F6;
+  --frontdesk-600: #1D4ED8;
+  --frontdesk-700: #2563EB;
+}
+
 @layer base {
-  :root {
-    --radius: 0.5rem;
-    --primary-color: #3B82F6;
-    --secondary-color: #60A5FA;
-  }
-
   html {
-    scroll-behavior: smooth;
+    font-family: "Inter", system-ui, sans-serif;
   }
-
+  
   body {
-    @apply bg-white text-gray-800;
-    font-family: 'Inter var', sans-serif;
-  }
-  
-  .font-sora {
-    font-family: 'Sora', sans-serif;
-  }
-  
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-sora;
+    @apply bg-gray-50 text-gray-900;
   }
 }
 
 @layer components {
-  .btn-primary {
-    @apply rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none 
-    transition-colors duration-200;
-  }
-
-  .btn-secondary {
-    @apply rounded-md bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300 focus:outline-none 
-    transition-colors duration-200;
-  }
-
-  .sidebar-link {
-    @apply flex items-center gap-2 rounded-md px-3 py-2 text-gray-700 hover:bg-gray-100 transition-colors;
-  }
-
-  .sidebar-link.active {
-    @apply bg-blue-100 text-blue-600;
-  }
-
-  .input-control {
-    @apply rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none;
-  }
-
   .card-dashboard {
-    @apply rounded-lg border border-gray-100 bg-white p-6 shadow-sm;
+    @apply rounded-lg border border-gray-100 bg-white p-5 shadow-sm;
+  }
+  
+  .input-control {
+    @apply rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:border-frontdesk-500 focus:outline-none focus:ring-1 focus:ring-frontdesk-500;
+  }
+  
+  .btn-primary {
+    @apply rounded-md bg-[var(--frontdesk-600)] px-4 py-2 font-medium text-white shadow-sm hover:bg-[var(--frontdesk-700)] focus:outline-none focus:ring-2 focus:ring-[var(--frontdesk-500)] focus:ring-offset-2;
+  }
+  
+  .btn-secondary {
+    @apply rounded-md border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[var(--frontdesk-500)] focus:ring-offset-2;
+  }
+
+  .btn-success {
+    @apply rounded-md bg-green-600 px-4 py-2 font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2;
+  }
+
+  .btn-danger {
+    @apply rounded-md bg-red-600 px-4 py-2 font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
   }
   
   .badge {
     @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
   }
   
-  .badge-blue {
-    @apply bg-blue-100 text-blue-800;
-  }
-  
   .badge-green {
     @apply bg-green-100 text-green-800;
+  }
+  
+  .badge-yellow {
+    @apply bg-yellow-100 text-yellow-800;
   }
   
   .badge-red {
     @apply bg-red-100 text-red-800;
   }
   
-  .badge-yellow {
-    @apply bg-yellow-100 text-yellow-800;
+  .badge-blue {
+    @apply bg-blue-100 text-blue-800;
+  }
+
+  .badge-gray {
+    @apply bg-gray-100 text-gray-800;
   }
 }
 
-/* Esquemas de cores temáticos */
-:root.theme-blue {
-  --primary-color: #3B82F6;
-  --secondary-color: #60A5FA;
+/* Calendar Grid Styles */
+.grid-cols-31 {
+  display: grid;
+  grid-template-columns: repeat(31, minmax(30px, 1fr));
 }
 
-:root.theme-purple {
-  --primary-color: #7E69AB;
-  --secondary-color: #9b87f5;
-}
-
-:root.theme-green {
-  --primary-color: #10B981;
-  --secondary-color: #34D399;
-}
-
-:root.theme-red {
-  --primary-color: #EF4444;
-  --secondary-color: #F87171;
-}
-
-:root.theme-orange {
-  --primary-color: #F59E0B;
-  --secondary-color: #FBBF24;
-}
-
-:root.theme-pink {
-  --primary-color: #EC4899;
-  --secondary-color: #F472B6;
-}
-
-/* Aplicação dinâmica das cores */
-.btn-primary {
-  background-color: var(--primary-color);
-}
-
-.btn-primary:hover {
-  background-color: var(--secondary-color);
-}
-
-.sidebar-link.active {
-  background-color: color-mix(in srgb, var(--primary-color) 10%, white);
-  color: var(--primary-color);
-}
-
-.input-control:focus {
-  border-color: var(--primary-color);
-}
-
-/* Set default theme to blue */
-:root {
-  --primary-color: #3B82F6;
-  --secondary-color: #60A5FA;
-}
-
-/* Set blue as the default theme class */
-html {
-  @apply theme-blue;
+/* Transitions for Theme Color Changes */
+body * {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
