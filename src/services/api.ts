@@ -1,4 +1,3 @@
-
 // API service for Beds24 integration
 import { toast } from "@/components/ui/use-toast";
 
@@ -393,5 +392,50 @@ export const getAvailability = async (token: string, propId: string, dateFrom: s
   } catch (error) {
     console.error('Error fetching availability:', error);
     return { success: false, error: 'Erro ao buscar disponibilidade' };
+  }
+};
+
+// Add missing getUsers function
+export const getUsers = async (token: string) => {
+  try {
+    console.log("Getting users with token:", token);
+    
+    // Verify token is correct
+    const correctToken = 'U51gBw5Si1hKKHk78czHCNpysUX/5/zGupZAaLjImfYctuc9eFoIlVBUFrpX9PBJU4uNj+koeqJA+FuvhRu9DFKPHzrs+BEOMX/pT+zruycX+zkjwaeovrPTvDO3vPBF6kwDSpQ8TT/4uff/+lc/LUPiaxqLa+4cIP+HWZvx9Eo=';
+    
+    if (token !== correctToken) {
+      return { success: false, error: 'Token inválido' };
+    }
+    
+    // Return mock user data for now
+    return { 
+      success: true, 
+      data: [
+        {
+          id: 1,
+          name: 'Admin User',
+          email: 'admin@example.com',
+          role: 'admin',
+          created: '2023-10-01'
+        },
+        {
+          id: 2,
+          name: 'Property Manager',
+          email: 'manager@example.com',
+          role: 'manager',
+          created: '2023-10-15'
+        },
+        {
+          id: 3,
+          name: 'Front Desk',
+          email: 'frontdesk@example.com',
+          role: 'staff',
+          created: '2023-11-01'
+        }
+      ]
+    };
+  } catch (error) {
+    console.error('Error in getUsers:', error);
+    return { success: false, error: (error as Error).message };
   }
 };
