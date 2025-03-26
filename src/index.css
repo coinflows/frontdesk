@@ -17,7 +17,7 @@
   }
 
   body {
-    @apply bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100;
+    @apply bg-white text-gray-800;
     font-family: 'Inter var', sans-serif;
   }
   
@@ -33,32 +33,48 @@
 @layer components {
   .btn-primary {
     @apply rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none 
-    dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200;
+    transition-colors duration-200;
   }
 
   .btn-secondary {
     @apply rounded-md bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300 focus:outline-none 
-    dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors duration-200;
+    transition-colors duration-200;
   }
 
   .sidebar-link {
-    @apply flex items-center gap-2 rounded-md px-3 py-2 text-gray-700 hover:bg-gray-100 transition-colors 
-    dark:text-gray-300 dark:hover:bg-gray-700;
+    @apply flex items-center gap-2 rounded-md px-3 py-2 text-gray-700 hover:bg-gray-100 transition-colors;
   }
 
   .sidebar-link.active {
-    @apply bg-blue-100 text-blue-600 
-    dark:bg-blue-900 dark:text-blue-300;
+    @apply bg-blue-100 text-blue-600;
   }
 
   .input-control {
-    @apply rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none 
-    dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:focus:border-blue-400;
+    @apply rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none;
   }
 
   .card-dashboard {
-    @apply rounded-lg border border-gray-100 bg-white p-6 shadow-sm 
-    dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200;
+    @apply rounded-lg border border-gray-100 bg-white p-6 shadow-sm;
+  }
+  
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+  
+  .badge-blue {
+    @apply bg-blue-100 text-blue-800;
+  }
+  
+  .badge-green {
+    @apply bg-green-100 text-green-800;
+  }
+  
+  .badge-red {
+    @apply bg-red-100 text-red-800;
+  }
+  
+  .badge-yellow {
+    @apply bg-yellow-100 text-yellow-800;
   }
 }
 
@@ -107,11 +123,17 @@
   color: var(--primary-color);
 }
 
-.dark .sidebar-link.active {
-  background-color: color-mix(in srgb, var(--primary-color) 30%, black);
-  color: var(--secondary-color);
-}
-
 .input-control:focus {
   border-color: var(--primary-color);
+}
+
+/* Set default theme to blue */
+:root {
+  --primary-color: #3B82F6;
+  --secondary-color: #60A5FA;
+}
+
+/* Set blue as the default theme class */
+html {
+  @apply theme-blue;
 }

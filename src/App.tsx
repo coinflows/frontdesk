@@ -15,6 +15,8 @@ import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/admin/Dashboard";
 import Users from "./pages/admin/Users";
 import Properties from "./pages/admin/Properties";
+import PropertyDetails from "./pages/admin/PropertyDetails";
+import PropertyEdit from "./pages/admin/PropertyEdit";
 import Bookings from "./pages/admin/Bookings";
 import Reports from "./pages/admin/Reports";
 
@@ -42,6 +44,8 @@ const App = () => (
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/users" element={<Users />} />
               <Route path="/admin/properties" element={<Properties />} />
+              <Route path="/admin/properties/:id" element={<PropertyDetails />} />
+              <Route path="/admin/properties/:id/edit" element={<PropertyEdit />} />
               <Route path="/admin/bookings" element={<Bookings />} />
               <Route path="/admin/reports" element={<Reports />} />
 

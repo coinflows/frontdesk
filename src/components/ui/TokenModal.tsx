@@ -10,12 +10,17 @@ interface TokenModalProps {
   onClose: () => void;
 }
 
+interface ValidationResult {
+  success: boolean;
+  message: string;
+}
+
 const TokenModal = ({ isOpen, onClose }: TokenModalProps) => {
   const { user, updateApiConnection } = useAuth();
   const [isAnimating, setIsAnimating] = useState(false);
   const [token, setToken] = useState(user?.token || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [validationResult, setValidationResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -55,56 +60,68 @@ const TokenModal = ({ isOpen, onClose }: TokenModalProps) => {
     setValidationResult(null);
     
     try {
-      const result = await validateToken(token);
+      // Only allow the specific token to connect
+      const correctToken = 'U51gBw5Si1hKKHk78czHCNpysUX/5/zGupZAaLjImfYctuc9eFoIlVBUFrpX9PBJU4uNj+koeqJA+FuvhRu9DFKPHzrs+BEOMX/pT+zruycX+zkjwaeovrPTvDO3vPBF6kwDSpQ8TT/4uff/+lc/LUPiaxqLa+4cIP+HWZvx9Eo=';
       
-      if (result.success) {
-        const propertiesCount = result.data?.length || 0;
-        setValidationResult({ 
-          success: true, 
-          message: `Conectado com sucesso! ${propertiesCount} propriedades encontradas.` 
-        });
+      if (token.trim() === correctToken) {
+        const result = await validateToken(token);
         
-        // Update user state with connection and token
-        updateApiConnection(true, token);
-        
-        toast({
-          title: "Conectado com sucesso",
-          description: `API conectada com ${propertiesCount} propriedades encontradas.`,
-          variant: "default",
-        });
-        
-        // Close the modal after successful connection
-        setTimeout(() => {
-          handleClose();
-        }, 2000);
+        if (result && 'success' in result && result.success) {
+          const propertiesCount = 'data' in result && result.data ? result.data.length : 0;
+          setValidationResult({ 
+            success: true, 
+            message: `Conectado com sucesso! ${propertiesCount} propriedades encontradas.` 
+          });
+          
+          // Update user state with connection and token
+          updateApiConnection(true, token);
+          
+          toast({
+            title: "Conectado com sucesso",
+            description: `API conectada com ${propertiesCount} propriedades encontradas.`,
+            variant: "default",
+          });
+          
+          // Close the modal after successful connection
+          setTimeout(() => {
+            handleClose();
+          }, 2000);
+        } else {
+          setValidationResult({ 
+            success: false, 
+            message: result && 'error' in result ? result.error as string : "Falha na validação do token." 
+          });
+          
+          toast({
+            title: "Falha na validação",
+            description: "Não foi possível conectar à API Beds24.",
+            variant: "destructive",
+          });
+        }
       } else {
         setValidationResult({ 
           success: false, 
-          message: result.error || "Falha na validação do token." 
+          message: "Token inválido. Por favor, verifique e tente novamente." 
+        });
+        
+        toast({
+          title: "Token inválido",
+          description: "O token fornecido não é válido.",
+          variant: "destructive",
         });
       }
     } catch (error) {
       console.error("Token validation error:", error);
-      
-      // Para fins de demonstração, vamos simular sucesso mesmo com erro
       setValidationResult({ 
-        success: true, 
-        message: "Conectado com sucesso! 3 propriedades encontradas."
+        success: false, 
+        message: "Erro ao validar o token. Tente novamente." 
       });
-      
-      // Update user state with connection and token
-      updateApiConnection(true, token);
       
       toast({
-        title: "Conectado com sucesso",
-        description: "API conectada com 3 propriedades encontradas.",
-        variant: "default",
+        title: "Erro",
+        description: "Ocorreu um erro ao validar o token.",
+        variant: "destructive",
       });
-      
-      // Close the modal after successful connection
-      setTimeout(() => {
-        handleClose();
-      }, 2000);
     } finally {
       setIsSubmitting(false);
     }
@@ -120,15 +137,15 @@ const TokenModal = ({ isOpen, onClose }: TokenModalProps) => {
       onClick={handleBackdropClick}
     >
       <div
-        className={`max-w-lg w-full rounded-xl bg-white dark:bg-gray-800 shadow-lg transition-all duration-300 ${
+        className={`max-w-lg w-full rounded-xl bg-white shadow-lg transition-all duration-300 ${
           isAnimating ? 'translate-y-0 scale-100' : 'translate-y-4 scale-95'
         }`}
       >
-        <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white font-sora">Conexão com API Beds24</h3>
+        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+          <h3 className="text-lg font-medium text-gray-900 font-sora">Conexão com API Beds24</h3>
           <button
             onClick={handleClose}
-            className="rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500 dark:text-gray-300 dark:hover:bg-gray-700"
+            className="rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500"
           >
             <X size={20} />
           </button>
@@ -138,18 +155,18 @@ const TokenModal = ({ isOpen, onClose }: TokenModalProps) => {
           <form onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div>
-                <label htmlFor="api-token" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label htmlFor="api-token" className="block text-sm font-medium text-gray-700">
                   Token de Acesso
                 </label>
                 <textarea
                   id="api-token"
                   rows={4}
-                  className="mt-1 input-control w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  className="mt-1 input-control w-full"
                   value={token}
                   onChange={(e) => setToken(e.target.value)}
                   placeholder="Cole seu token de acesso da API Beds24..."
                 />
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <p className="mt-1 text-xs text-gray-500">
                   Obtenha seu token de acesso no painel da Beds24 em Configurações &gt; Integrações &gt; API v2.
                 </p>
               </div>
@@ -157,15 +174,15 @@ const TokenModal = ({ isOpen, onClose }: TokenModalProps) => {
               {validationResult && (
                 <div className={`p-3 rounded-md ${
                   validationResult.success 
-                    ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400' 
-                    : 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400'
+                    ? 'bg-green-50 text-green-700' 
+                    : 'bg-red-50 text-red-700'
                 }`}>
                   <div className="flex items-start">
                     <div className="flex-shrink-0">
                       {validationResult.success ? (
-                        <Check className="h-5 w-5 text-green-400 dark:text-green-500" />
+                        <Check className="h-5 w-5 text-green-400" />
                       ) : (
-                        <X className="h-5 w-5 text-red-400 dark:text-red-500" />
+                        <X className="h-5 w-5 text-red-400" />
                       )}
                     </div>
                     <div className="ml-3">
@@ -178,7 +195,7 @@ const TokenModal = ({ isOpen, onClose }: TokenModalProps) => {
               <div className="flex justify-end space-x-3 pt-4">
                 <button
                   type="button"
-                  className="btn-secondary dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                  className="btn-secondary"
                   onClick={handleClose}
                 >
                   Cancelar

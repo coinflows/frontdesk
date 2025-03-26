@@ -4,6 +4,8 @@ import { Navigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { useAuth } from '../../hooks/useAuth';
 import TokenModal from '../ui/TokenModal';
+import ColorSchemeModal from '../ui/ColorSchemeModal';
+import { Palette } from 'lucide-react';
 
 interface DashboardLayoutProps {
   adminOnly?: boolean;
@@ -17,6 +19,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ adminOnly = false, ch
     return savedState ? JSON.parse(savedState) : false;
   });
   const [showTokenModal, setShowTokenModal] = useState(false);
+  const [showColorSchemeModal, setShowColorSchemeModal] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('sidebar_collapsed', JSON.stringify(sidebarCollapsed));
@@ -28,6 +31,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ adminOnly = false, ch
 
   const toggleTokenModal = () => {
     setShowTokenModal(prev => !prev);
+  };
+
+  const toggleColorSchemeModal = () => {
+    setShowColorSchemeModal(prev => !prev);
   };
 
   // Show loading state while authentication is being checked
@@ -55,11 +62,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ adminOnly = false, ch
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex h-screen bg-gray-50">
       <Sidebar 
         collapsed={sidebarCollapsed} 
         toggleCollapse={toggleSidebar} 
         toggleTokenModal={toggleTokenModal}
+        toggleColorSchemeModal={toggleColorSchemeModal}
       />
       
       <main 
@@ -67,6 +75,17 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ adminOnly = false, ch
           sidebarCollapsed ? 'ml-20' : 'ml-64'
         }`}
       >
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={toggleColorSchemeModal}
+            className="flex items-center gap-2 px-3 py-2 bg-white rounded-md shadow-sm hover:bg-gray-50 transition-colors"
+            title="Alterar esquema de cores"
+          >
+            <Palette size={18} />
+            <span>Cores</span>
+          </button>
+        </div>
+        
         {children}
       </main>
 
@@ -74,6 +93,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ adminOnly = false, ch
       <TokenModal 
         isOpen={showTokenModal} 
         onClose={() => setShowTokenModal(false)} 
+      />
+      
+      {/* Color Scheme Modal */}
+      <ColorSchemeModal 
+        isOpen={showColorSchemeModal} 
+        onClose={() => setShowColorSchemeModal(false)} 
       />
     </div>
   );

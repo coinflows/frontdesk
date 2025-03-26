@@ -1,76 +1,101 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import DashboardLayout from '../../components/layout/DashboardLayout';
-import { Search, Eye, MapPin } from 'lucide-react';
+import { Search, Eye, MapPin, Edit, RefreshCw, Bed, Home, UserIcon, Building2 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { getProperties } from '@/services/api';
+import { toast } from '@/components/ui/use-toast';
+import { formatCurrency } from '@/utils/formatters';
 
 const Properties = () => {
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState('all');
+  const [properties, setProperties] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // In a real app, this would come from an API
-  const properties = [
-    {
-      id: '1001',
-      name: 'Apartamento Luxo Centro',
-      address: 'Av Paulista, 1000',
-      city: 'São Paulo',
-      type: 'Apartamento',
-      rooms: 2,
-      capacity: 4,
-      channels: ['Airbnb', 'Booking.com'],
-      owner: 'Carlos Oliveira',
-      image: 'https://placehold.co/80x60?text=Apto1',
-    },
-    {
-      id: '1002',
-      name: 'Casa de Praia Premium',
-      address: 'Rua da Praia, 123',
-      city: 'Florianópolis',
-      type: 'Casa',
-      rooms: 3,
-      capacity: 6,
-      channels: ['Airbnb', 'Booking.com', 'Expedia'],
-      owner: 'Ana Costa',
-      image: 'https://placehold.co/80x60?text=Casa',
-    },
-    {
-      id: '1003',
-      name: 'Studio Moderno',
-      address: 'Rua Augusta, 500',
-      city: 'São Paulo',
-      type: 'Studio',
-      rooms: 1,
-      capacity: 2,
-      channels: ['Airbnb'],
-      owner: 'Ana Costa',
-      image: 'https://placehold.co/80x60?text=Studio',
-    },
-    {
-      id: '1004',
-      name: 'Chalé na Montanha',
-      address: 'Estrada da Serra, 45',
-      city: 'Campos do Jordão',
-      type: 'Chalé',
-      rooms: 2,
-      capacity: 5,
-      channels: ['Airbnb', 'Booking.com'],
-      owner: 'Pedro Santos',
-      image: 'https://placehold.co/80x60?text=Chale',
-    },
-  ];
+  const fetchProperties = async () => {
+    if (!user?.token) {
+      toast({
+        title: "Erro",
+        description: "Token de API não encontrado",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const result = await getProperties(user.token);
+      if (result.success && result.data) {
+        setProperties(result.data);
+      } else {
+        toast({
+          title: "Erro",
+          description: "Falha ao carregar propriedades",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching properties:", error);
+      toast({
+        title: "Erro",
+        description: "Falha ao carregar propriedades",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProperties();
+  }, [user?.token]);
 
   const filteredProperties = properties.filter(
-    property =>
-      property.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      property.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      property.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      property.owner.toLowerCase().includes(searchTerm.toLowerCase())
+    property => {
+      const matchesSearch = 
+        property.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        property.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        property.city.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesType = 
+        filterType === 'all' || 
+        property.type === filterType;
+      
+      return matchesSearch && matchesType;
+    }
   );
+
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'apartment':
+        return <Home size={18} />;
+      case 'house':
+        return <Building2 size={18} />;
+      case 'hotel':
+        return <Building2 size={18} />;
+      case 'hostel':
+        return <Bed size={18} />;
+      default:
+        return <Home size={18} />;
+    }
+  };
 
   return (
     <DashboardLayout adminOnly>
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">Propriedades</h1>
+          <h1 className="text-2xl font-bold text-gray-900 font-sora">Propriedades</h1>
+          <button
+            className="btn-primary mt-4 flex items-center gap-2 sm:mt-0"
+            onClick={fetchProperties}
+            disabled={isLoading}
+          >
+            <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
+            <span>{isLoading ? 'Carregando...' : 'Atualizar Dados'}</span>
+          </button>
         </div>
 
         {/* Search and Filters */}
@@ -87,33 +112,47 @@ const Properties = () => {
               onChange={e => setSearchTerm(e.target.value)}
             />
           </div>
-          <select className="input-control sm:w-48">
+          <select 
+            className="input-control sm:w-48"
+            value={filterType}
+            onChange={e => setFilterType(e.target.value)}
+          >
             <option value="all">Todos os tipos</option>
             <option value="apartment">Apartamento</option>
             <option value="house">Casa</option>
-            <option value="studio">Studio</option>
+            <option value="hotel">Hotel</option>
+            <option value="hostel">Hostel</option>
             <option value="cabin">Chalé</option>
           </select>
         </div>
 
         {/* Properties Grid */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredProperties.map(property => (
-            <div key={property.id} className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md">
+            <div key={property.propId} className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md">
               <div className="relative">
                 <img
-                  src={property.image}
+                  src={property.images && property.images.length > 0 ? property.images[0] : 'https://placehold.co/400x300?text=Imagem+Indisponível'}
                   alt={property.name}
-                  className="h-40 w-full object-cover"
+                  className="h-48 w-full object-cover"
                 />
                 <div className="absolute top-2 right-2 rounded-full bg-white px-2 py-1 text-xs font-medium text-gray-700 shadow-sm">
-                  {property.type}
+                  <div className="flex items-center gap-1">
+                    {getTypeIcon(property.type)}
+                    <span>
+                      {property.type === 'apartment' ? 'Apartamento' : 
+                       property.type === 'house' ? 'Casa' : 
+                       property.type === 'hotel' ? 'Hotel' : 
+                       property.type === 'hostel' ? 'Hostel' : 
+                       property.type === 'cabin' ? 'Chalé' : property.type}
+                    </span>
+                  </div>
                 </div>
               </div>
               
               <div className="p-4">
                 <div className="flex justify-between">
-                  <h3 className="truncate text-lg font-medium text-gray-900">{property.name}</h3>
+                  <h3 className="truncate text-lg font-medium text-gray-900 font-sora">{property.name}</h3>
                 </div>
                 
                 <div className="mt-2 flex items-center text-sm text-gray-500">
@@ -122,37 +161,60 @@ const Properties = () => {
                 </div>
                 
                 <div className="mt-3 flex items-center gap-4 text-sm">
+                  {property.rooms && (
+                    <div>
+                      <span className="font-medium">{property.rooms}</span>{' '}
+                      <span className="text-gray-500">quartos</span>
+                    </div>
+                  )}
                   <div>
-                    <span className="font-medium">{property.rooms}</span>{' '}
-                    <span className="text-gray-500">quartos</span>
-                  </div>
-                  <div>
-                    <span className="font-medium">{property.capacity}</span>{' '}
+                    <span className="font-medium">{property.maxGuests}</span>{' '}
                     <span className="text-gray-500">hóspedes</span>
                   </div>
+                  {property.pricePerNight && (
+                    <div>
+                      <span className="font-medium text-gray-900">{formatCurrency(property.pricePerNight)}</span>
+                      <span className="text-gray-500">/noite</span>
+                    </div>
+                  )}
                 </div>
                 
-                <div className="mt-3">
-                  <p className="text-xs text-gray-500">Proprietário</p>
-                  <p className="text-sm font-medium">{property.owner}</p>
-                </div>
-                
-                <div className="mt-3">
-                  <p className="mb-1 text-xs text-gray-500">Canais conectados</p>
-                  <div className="flex gap-1">
-                    {property.channels.map(channel => (
-                      <span key={channel} className="badge badge-blue text-xs">
-                        {channel}
-                      </span>
-                    ))}
+                {property.propertyGroup && (
+                  <div className="mt-3">
+                    <p className="text-xs text-gray-500">Grupo</p>
+                    <p className="text-sm font-medium">{property.propertyGroup}</p>
                   </div>
-                </div>
+                )}
                 
-                <div className="mt-4 flex justify-end">
-                  <button className="flex items-center gap-1 rounded-md px-3 py-1 text-sm text-frontdesk-600 hover:bg-frontdesk-50">
+                {property.beds && property.beds.length > 0 && (
+                  <div className="mt-3">
+                    <p className="mb-1 text-xs text-gray-500">Camas disponíveis</p>
+                    <div className="flex flex-wrap gap-1">
+                      {property.beds.map((bed: string, index: number) => (
+                        <span key={index} className="text-xs bg-gray-100 px-2 py-1 rounded-md">
+                          {bed}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                <div className="mt-4 flex justify-between">
+                  <Link 
+                    to={`/admin/properties/${property.propId}/edit`}
+                    className="flex items-center gap-1 rounded-md px-3 py-1 text-sm text-gray-600 hover:bg-gray-50"
+                  >
+                    <Edit size={16} />
+                    <span>Editar</span>
+                  </Link>
+                  
+                  <Link 
+                    to={`/admin/properties/${property.propId}`}
+                    className="flex items-center gap-1 rounded-md px-3 py-1 text-sm text-frontdesk-600 hover:bg-frontdesk-50"
+                  >
                     <Eye size={16} />
-                    <span>Ver detalhes</span>
-                  </button>
+                    <span>Ver página</span>
+                  </Link>
                 </div>
               </div>
             </div>

@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const storedUser = localStorage.getItem('frontdesk_user');
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
-      // Certificar-se de que o usuário tenha o token e conexão API ativa
+      // Ensure the user has the token and active API connection
       if (!parsedUser.token) {
         parsedUser.token = DEFAULT_TOKEN;
         parsedUser.apiConnected = true;
