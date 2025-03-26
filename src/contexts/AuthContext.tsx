@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 
 interface User {
@@ -15,8 +14,11 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   loading: boolean;
+  isLoading: boolean;
+  isAuthenticated: boolean;
   setApiConnected: (connected: boolean) => void;
   setUserToken: (token: string) => void;
+  updateApiConnection: (connected: boolean, token: string) => void;
 }
 
 const ADMIN_USER = {
@@ -40,8 +42,11 @@ export const AuthContext = createContext<AuthContextType>({
   login: async () => false,
   logout: () => {},
   loading: true,
+  isLoading: true,
+  isAuthenticated: false,
   setApiConnected: () => {},
-  setUserToken: () => {}
+  setUserToken: () => {},
+  updateApiConnection: () => {}
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -49,7 +54,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored user on mount
     const storedUser = localStorage.getItem('frontdesk_user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
@@ -57,10 +61,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   }, []);
 
+  const isAuthenticated = user !== null;
+
   const login = async (email: string, password: string): Promise<boolean> => {
     setLoading(true);
     
-    // In a real app, this would be an API call
     if (email === ADMIN_USER.email && password === 'Acesso@01') {
       const userData = {...ADMIN_USER};
       setUser(userData);
@@ -100,8 +105,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const updateApiConnection = (connected: boolean, token: string) => {
+    if (user) {
+      const updatedUser = { ...user, apiConnected: connected, token };
+      setUser(updatedUser);
+      localStorage.setItem('frontdesk_user', JSON.stringify(updatedUser));
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, setApiConnected, setUserToken }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      login, 
+      logout, 
+      loading, 
+      isLoading: loading, 
+      isAuthenticated,
+      setApiConnected, 
+      setUserToken,
+      updateApiConnection 
+    }}>
       {children}
     </AuthContext.Provider>
   );
