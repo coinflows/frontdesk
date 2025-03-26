@@ -23,6 +23,9 @@ import Reports from "./pages/admin/Reports";
 // User Pages
 import UserDashboard from "./pages/user/Dashboard";
 
+// Public Pages
+import PropertyPublicPage from "./components/property/PropertyPublicPage";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -36,6 +39,7 @@ const App = () => (
             <Routes>
               {/* Public Routes */}
               <Route path="/login" element={<Login />} />
+              <Route path="/properties/:id" element={<PropertyPublicPage />} />
               
               {/* Redirect from root to appropriate dashboard */}
               <Route path="/" element={<Navigate to="/login" replace />} />

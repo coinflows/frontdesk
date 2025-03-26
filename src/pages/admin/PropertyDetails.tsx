@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { ArrowLeft, MapPin, UserIcon, Bed, DollarSign, Calendar, Edit } from 'lucide-react';
+import { ArrowLeft, MapPin, UserIcon, Bed, DollarSign, Calendar, Edit, ExternalLink } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { getPropertyById, getBookings } from '@/services/api';
 import { toast } from '@/components/ui/use-toast';
@@ -108,17 +108,29 @@ const PropertyDetails = () => {
           <span>Voltar para propriedades</span>
         </Link>
         
-        <Link 
-          to={`/admin/properties/${id}/edit`}
-          className="btn-primary flex items-center"
-        >
-          <Edit size={16} className="mr-2" />
-          <span>Editar Propriedade</span>
-        </Link>
+        <div className="flex gap-3">
+          <Link 
+            to={`/admin/properties/${id}/edit`}
+            className="btn-primary flex items-center"
+          >
+            <Edit size={16} className="mr-2" />
+            <span>Editar Propriedade</span>
+          </Link>
+          
+          <a 
+            href={`/properties/${id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-secondary flex items-center"
+          >
+            <ExternalLink size={16} className="mr-2" />
+            <span>Ver Página Pública</span>
+          </a>
+        </div>
       </div>
       
       {/* Property Details Header */}
-      <div className="rounded-xl overflow-hidden bg-white shadow-sm mb-8">
+      <div className="rounded-[15px] overflow-hidden bg-white shadow-sm mb-8">
         <div className="relative h-64 w-full overflow-hidden">
           <img 
             src={property.images && property.images.length > 0 
@@ -206,7 +218,7 @@ const PropertyDetails = () => {
                   {bookings.slice(0, 5).map(booking => (
                     <div 
                       key={booking.bookId}
-                      className="border border-gray-200 rounded-lg p-4 bg-gray-50"
+                      className="border border-gray-200 rounded-[15px] p-4 bg-gray-50"
                     >
                       <div className="flex justify-between items-start mb-2">
                         <div>
@@ -244,7 +256,7 @@ const PropertyDetails = () => {
                   </Link>
                 </div>
               ) : (
-                <div className="text-gray-500 text-center py-6 border border-dashed border-gray-300 rounded-lg">
+                <div className="text-gray-500 text-center py-6 border border-dashed border-gray-300 rounded-[15px]">
                   Nenhuma reserva encontrada
                 </div>
               )}
